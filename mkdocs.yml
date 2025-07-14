@@ -1,0 +1,5 @@
+site_name: FEMA FFRD Specifications
+site_url: https://fema-ffrd.github.io/specs
+theme:
+  name: material
+plugins: []
