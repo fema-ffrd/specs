@@ -3,8 +3,6 @@ site_url: https://fema-ffrd.github.io/specs
 theme:
   name: material
   custom_dir: overrides
-  # features:
-  #   - announce.dismiss
 repo_url: https://github.com/fema-ffrd/specs
 extra:
   version:
