@@ -1,17 +1,16 @@
-# Welcome to MkDocs
+# FEMA FFRD Specifications
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+![FFRD Overview](images/ffrd-overview.png)
 
-## Commands
+## About FFRD
+FEMA’s Future of Flood Risk Data (FFRD) initiative provides a more
+comprehensive picture of the country’s flood hazards and risk by leveraging new
+technologies to include more efficient, accurate, and consistent flood risk
+information across the nation.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## More information
+* [The Future of Flood Risk Data (FFRD)](https://www.fema.gov/print/pdf/node/578088)
+* [FEMA's Future of Flood Risk Data Initiative](https://www.hec.usace.army.mil/confluence/hecnews/spring-2023/fema-s-future-of-flood-risk-data-initiative)
+  _(US Army Corps of Engineers)_
+* [CTP Webinar: FEMA's Future of Flood Risk Data Initiative](https://floodsciencecenter.org/event/ctp-webinar-femas-future-of-flood-risk-data-initiative/)
+  _(Association of State Floodplain Managers)_

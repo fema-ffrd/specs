@@ -2,5 +2,5 @@
 name = "fema-ffrd-specs"
 version = "0.0.1"
 description = "FEMA FFRD Specifications"
-dependencies = ["mkdocs-material"]
+dependencies = ["mkdocs-material", "mike"]
 

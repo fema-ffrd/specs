@@ -2,4 +2,20 @@ site_name: FEMA FFRD Specifications
 site_url: https://fema-ffrd.github.io/specs
 theme:
   name: material
-plugins: []
+  custom_dir: overrides
+  # features:
+  #   - announce.dismiss
+repo_url: https://github.com/fema-ffrd/specs
+extra:
+  version:
+    provider: mike
+nav:
+  - "Overview": "index.md"
+  - "scope.md"
+  - "terms.md"
+  - "3. Processes":
+    - "processes/hechms.md"
+    - "processes/hecras.md"
+  - "A. Appendix": 
+    - "references.md"
+  
