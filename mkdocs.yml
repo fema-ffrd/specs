@@ -7,6 +7,12 @@ repo_url: https://github.com/fema-ffrd/specs
 extra:
   version:
     provider: mike
+markdown_extensions:
+  - pymdownx.superfences:  # mermaid diagrams
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - "Overview": "index.md"
   - "scope.md"
