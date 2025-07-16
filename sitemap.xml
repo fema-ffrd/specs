@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/references/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/scope/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/terms/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/processes/hechms/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+    <url>
+         <loc>https://fema-ffrd.github.io/specs/processes/hecras/</loc>
+         <lastmod>2025-07-16</lastmod>
+    </url>
+</urlset>
