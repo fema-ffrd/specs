@@ -1,5 +1,7 @@
 # specs
-FEMA FFRD Specifications
+FEMA FFRD Specifications. IN PROGRESS.
+
+https://fema-ffrd.github.io/specs/
 
 ## Setup
 1. Create a Python virtual environment.
