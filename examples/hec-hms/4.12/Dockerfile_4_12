@@ -1,0 +1,37 @@
+FROM openjdk:17-jdk-slim-bullseye as dev
+
+# Metadata
+LABEL base_image="openjdk:17-jdk-slim-bullseye" \
+      version="0.1.0"   \
+      software="hec hms runner" \
+      software.version="4.12" \
+      about.summary="a containerized tool to run hec-hms version 4.12" \
+      about.home="https://github.com/fema-ffrd/specs" \
+      about.documentation="" \
+      about.license="MIT" \
+      about.license_file="/usr/share/common-licenses/Apache-2.0" \
+      about.tags="hec-hms, FFRD, hydrology" \
+      extra.identifiers.biotools=""
+
+ENV TZ=America/New_York
+ENV GRADLE_HOME=/opt/gradle/latest
+ENV PATH=${GRADLE_HOME}/bin:$PATH
+
+# Install dependencies and clean up
+RUN apt update && \
+    apt -y install --no-install-recommends wget libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 git unzip procps xvfb && \
+    wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/4.12-linux64/hec-hms-4.12-linux64.tar.gz -P / && \
+    tar -xvzf /hec-hms-4.12-linux64.tar.gz -C / && \
+    wget https://services.gradle.org/distributions/gradle-7.3.1-bin.zip -P /tmp && \
+    unzip -d /opt/gradle /tmp/gradle-7.3.1-bin.zip && \
+    ln -s /opt/gradle/gradle-7.3.1 /opt/gradle/latest && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/gradle-7.3.1-bin.zip /hec-hms-4.12-linux64.tar.gz
+
+# Copy the src and project folder and bash script
+COPY run-hms.sh /run-hms.sh
+COPY src /src
+
+RUN chmod +x /run-hms.sh
+
+ENTRYPOINT ["/run-hms.sh"]
