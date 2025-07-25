@@ -4,3 +4,5 @@ version = "0.0.1"
 description = "FEMA FFRD Specifications"
 dependencies = ["mkdocs-material", "mike"]
 
+[tool.setuptools.packages.find]
+exclude = ["*"]
