@@ -1,4 +1,4 @@
-# 2. Key terms, definitions, and abbreviations
+# Key terms, definitions, and abbreviations
 
 **Stochastic Storm Transposition (SST)**: a method used in hydrology to
 estimate flood risk and precipitation patterns by virtually expanding
