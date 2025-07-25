@@ -1,5 +1,7 @@
-IMAGE=my-base-image 
+IMAGE=ffrd_base
 docker build -t $IMAGE .
+
+# docker run --rm  $IMAGE
 
 docker run --rm  \
   -v $(pwd)/.env:/app/.env \
@@ -14,4 +16,3 @@ docker run --rm  \
     ]
   }' download
 
-# docker run --rm  $IMAGE 

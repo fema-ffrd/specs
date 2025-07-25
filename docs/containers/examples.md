@@ -43,7 +43,7 @@ RUN dotnet publish -c Release -o out
 
 FROM ffrd/base:latest
 COPY --from=build /app/out /usr/local/bin/
-COPY plugin-schema.json /app/new-schema.json
+COPY plugin-schema.json /app/schema-extension.json
 ```
 
 **Command:**
@@ -70,7 +70,7 @@ RUN ./gradlew build
 
 FROM ffrd/base:latest
 COPY --from=build /src/build/libs/hms.jar /usr/local/bin/hms.jar
-COPY plugin-schema.json /app/new-schema.json
+COPY plugin-schema.json /app/schema-extension.json
 ```
 
 **Entrypoint:**

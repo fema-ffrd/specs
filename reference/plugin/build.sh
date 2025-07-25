@@ -1,6 +1,6 @@
 IMAGE=my-final-image
 
-docker build -t $IMAGE .
+# docker build -t $IMAGE .
 
 docker run --rm \
   -v $(pwd)/.env:/app/.env \

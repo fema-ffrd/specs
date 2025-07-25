@@ -5,6 +5,7 @@ WORKDIR /app
 COPY config-schema.json entrypoint.py ./
 
 RUN pip install boto3 python-dotenv
+
 COPY download.py /usr/local/bin/download
 RUN chmod +x /usr/local/bin/download
 

@@ -3,7 +3,9 @@
   "properties": {
     "program": {
       "type": "string",
-      "enum": ["myapp"],
+      "enum": [
+        "myapp"
+      ],
       "description": "Program to execute after validation"
     },
     "files": {
@@ -14,5 +16,8 @@
       }
     }
   },
-  "required": ["program", "files"]
+  "required": [
+    "program",
+    "files"
+  ]
 }

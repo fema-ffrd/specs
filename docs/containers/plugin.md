@@ -14,7 +14,7 @@ This document outlines how to develop a **plugin image** that builds on the FFRD
 A plugin image typically consists of:
 
 - A compiled binary or script
-- An extended schema (`new-schema.json`)
+- An extended schema (`schema-extension.json`)
 - A Dockerfile that uses a multi-stage build to copy artifacts into the base image
 
 Example structure:
@@ -22,7 +22,7 @@ Example structure:
 ```bash
 my-plugin/
 ├── Dockerfile
-├── new-schema.json
+├── schema-extension.json
 ├── main.go  # or .csproj / Main.java / etc.
 ```
 
@@ -38,7 +38,7 @@ RUN go build -o myapp main.go
 
 FROM ffrd/base:latest
 COPY --from=build /app/myapp /usr/local/bin/myapp
-COPY new-schema.json /app/new-schema.json
+COPY schema-extension.json /app/schema-extension.json
 ```
 
 ---
@@ -74,7 +74,7 @@ for name in sys.argv[1:]:
 
 ## ✅ Validation
 
-Your plugin must define `new-schema.json` and include:
+Your plugin must define `schema-extension.json` and include:
 
 ```json
 {

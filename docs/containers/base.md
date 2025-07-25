@@ -18,7 +18,7 @@ This spec **can be implemented using any language, runtime, or base container**,
 
 The base image must validate the `--config` JSON using a [JSON Schema Draft 7](https://json-schema.org/draft-07/schema) file (`config-schema.json`).
 
-Developers can extend the schema by providing a `new-schema.json` file, which should be merged at image build time (e.g., using `jq -s '.[0] * .[1]'`).
+Developers can extend the schema by providing a `schema-extension.json` file, which should be merged at image build time (e.g., using `jq -s '.[0] * .[1]'`).
 
 ---
 
