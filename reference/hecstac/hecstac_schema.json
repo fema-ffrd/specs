@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/schemas/hecstac_schema.json",
+    "title": "RAS Metadata Process",
+    "description": "Schema for input parameters to ras_metadata script",
+    "version": "1.0.0",
+    "type": "object",
+    "properties": {
+        "ras_project_file": {
+            "type": "string",
+            "description": "Path to the HEC-RAS project file"
+        },
+        "item_id": {
+            "type": "string",
+            "description": "Unique identifier for the metadata item"
+        },
+        "crs": {
+            "type": "string",
+            "description": "Coordinate reference system (optional)"
+        }
+    },
+    "required": [
+        "ras_project_file",
+        "item_id"
+    ],
+    "additionalProperties": false
+}
