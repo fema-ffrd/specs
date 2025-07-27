@@ -1,18 +1,15 @@
 IMAGE=ffrd_base
 docker build -t $IMAGE .
 
-# docker run --rm  $IMAGE
+# docker run --rm $IMAGE
 
-docker run --rm  \
-  -v $(pwd)/.env:/app/.env \
+docker run --rm \
+  --env-file .env \
   $IMAGE \
-  --config '{
-    "downloads": [
-      {
-        "name": "trinity_log",
-        "source": "s3://trinity-pilot/logs/uploads/1749572844-qA5QR7gBvY.json",
-        "destination": "/tmp/1749572844-qA5QR7gBvY.json"
-      }
-    ]
-  }' download
+  "$(cat example-config.json)"
 
+# docker run --rm \
+#   --env-file .env \
+#   --entrypoint download_from_config \
+#   $IMAGE \
+#   "$(cat example-config.json)"

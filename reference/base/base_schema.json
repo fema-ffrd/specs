@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/base_schema.json",
+  "title": "Base Configuration Schema",
+  "description": "Defines the base-level configuration for operations such as downloading, uploading, and validating files from S3.",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "operations": {
+      "type": "array",
+      "description": "List of operations this configuration enables (e.g. downloading, uploading, and validating).",
+      "items": {
+        "type": "string",
+        "enum": ["download", "upload", "validate"]
+      },
+      "minItems": 1
+    },
+    "s3Downloads": {
+      "type": "array",
+      "title": "S3 Download Tasks",
+      "description": "List of files to download from S3.",
+      "items": {
+        "type": "object",
+        "title": "S3 Download Specification",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "A human-readable name or ID used for logging or environment variable naming.",
+            "minLength": 1
+          },
+          "s3Uri": {
+            "type": "string",
+            "description": "S3 URI in the format s3://bucket/key from which to download the file.",
+            "pattern": "^s3://.+/.+"
+          },
+          "destinationPath": {
+            "type": "string",
+            "description": "Filesystem path where the downloaded file will be stored.",
+            "minLength": 1
+          }
+        },
+        "required": ["name", "s3Uri", "destinationPath"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "s3Uploads": {
+      "type": "array",
+      "title": "S3 Upload Tasks",
+      "description": "Optional list of files to upload to S3 after processing.",
+      "items": {
+        "type": "object",
+        "title": "S3 Upload Specification",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Logical name for the upload task (used for logging or env variable lookup).",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the file on the container filesystem to be uploaded.",
+            "minLength": 1
+          },
+          "s3Uri": {
+            "type": "string",
+            "description": "Destination S3 URI in the format s3://bucket/key.",
+            "pattern": "^s3://.+/.+"
+          }
+        },
+        "required": ["name", "path", "s3Uri"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["operations"],
+  "additionalProperties": false
+}

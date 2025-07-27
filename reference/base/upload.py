@@ -2,17 +2,20 @@
 
 import os
 import sys
+from pathlib import Path
+
 import boto3
 import botocore
-from pathlib import Path
+
 
 def usage():
     print("Usage:")
-    print("  upload <s3://bucket/key> --name <logical_name>")
+    print("  upload <s3://bucket/key> --name <name>")
     print("  upload <s3://bucket/key> --path <file_path>")
     sys.exit(1)
 
-def upload_file(source, s3_uri):
+
+def upload_s3(source, s3_uri):
     if not Path(source).is_file():
         print(f"Error: File not found: {source}")
         sys.exit(1)
@@ -21,7 +24,7 @@ def upload_file(source, s3_uri):
         print(f"Error: Invalid S3 URI: {s3_uri}")
         sys.exit(1)
 
-    bucket, key = s3_uri[5:].split('/', 1)
+    bucket, key = s3_uri[5:].split("/", 1)
     s3 = boto3.client("s3")
 
     try:
@@ -30,6 +33,7 @@ def upload_file(source, s3_uri):
     except botocore.exceptions.BotoCoreError as e:
         print(f"❌ Upload failed: {e}")
         sys.exit(1)
+
 
 def main():
     if len(sys.argv) < 4:
@@ -50,7 +54,8 @@ def main():
     else:
         usage()
 
-    upload_file(source, s3_uri)
+    upload_s3(source, s3_uri)
+
 
 if __name__ == "__main__":
     main()
