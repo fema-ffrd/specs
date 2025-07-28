@@ -42,8 +42,11 @@ Use a bind mount to reference local data from within the container. MNT_DIR shou
 ```
 docker run -v "<LOCAL_DIR>:<MNT_DIR>" <IMAGE> <MNT_DIR> <PROJECT_NAME> <SIM_NAME>  
 
-ex:
-docker run -v "C:/project/Salsipuedes_Creek:/project/Salsipuedes_Creek" hec-hms-4-12-runner /project/Salsipuedes_Creek Salsipuedes_Creek Feb_2017
+example 1:
+docker run -v "C:\project\Salsipuedes_Creek:/project/Salsipuedes_Creek" hec-hms-4-12-runner /project/Salsipuedes_Creek Salsipuedes_Creek Feb_2017
+
+example 2:
+docker run -v "C:\project\tenk:/project/tenk" hec-hms-4-12-runner /project/tenk tenk "Jan 96 storm"
 ```
 
 ## Running the container in interactive mode:
@@ -56,9 +59,9 @@ docker run -it --entrypoint bash hec-hms-4-12-runner
 
 # Inputs/Outputs/Logs
 ## Inputs:
-- LOCAL_DIR (string): The local directory storing the hec-hms project files to be run.
+- LOCAL_DIR (string): The local directory storing the hec-hms project files to be run
 - PROJECT_NAME (string): The project name taken from the .hms file (ex: tenk.hms -> "tenk")
-- SIM-NAME (string): The simulation name to run.
+- SIM-NAME (string): The simulation name to run (found in .run file)
 
 ## Outputs:
 - TODO (these currently aren't writing to the volume mount):

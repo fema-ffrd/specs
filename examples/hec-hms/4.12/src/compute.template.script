@@ -1,3 +1,4 @@
 from hms.model.JythonHms import *
 OpenProject("${PROJECT_NAME}", "${PROJECT_DIR}")
-Compute("${SIM_NAME}")
+ComputeRun("${SIM_NAME}")
+SaveAllProjectComponents()

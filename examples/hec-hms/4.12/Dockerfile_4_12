@@ -1,37 +1,45 @@
-FROM openjdk:17-jdk-slim-bullseye as dev
+# --- Stage 1: Download and extract HEC-HMS and sample data ---
+FROM debian:bullseye-slim AS builder
 
-# Metadata
-LABEL base_image="openjdk:17-jdk-slim-bullseye" \
+RUN apt-get update && apt-get install -y ca-certificates wget unzip && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# Download and extract HEC-HMS
+RUN wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/4.12-linux64/hec-hms-4.12-linux64.tar.gz -O hec-hms.tar.gz \
+    && tar -xvzf hec-hms.tar.gz -C /tmp \
+    && rm hec-hms.tar.gz
+
+# Unzip sample projects shipped with HEC-HMS
+RUN unzip /tmp/HEC-HMS-4.12/samples.zip -d /tmp/HEC-HMS-4.12/samples
+
+# --- Stage 2: Minimal runtime image ---
+FROM debian:bullseye-slim AS runtime
+
+LABEL base_image="debian:bullseye-slim" \
       version="0.1.0"   \
       software="hec hms runner" \
       software.version="4.12" \
-      about.summary="a containerized tool to run hec-hms version 4.12" \
+      about.summary="a containerized tool to run hec-hms version 4.12 (bundled JRE only, multi-stage)" \
       about.home="https://github.com/fema-ffrd/specs" \
       about.documentation="" \
       about.license="MIT" \
-      about.license_file="/usr/share/common-licenses/Apache-2.0" \
-      about.tags="hec-hms, FFRD, hydrology" \
-      extra.identifiers.biotools=""
+      about.license_file="/LICENSE" \
+      about.tags="hec-hms, FFRD, hydrology"
 
-ENV TZ=America/New_York
-ENV GRADLE_HOME=/opt/gradle/latest
-ENV PATH=${GRADLE_HOME}/bin:$PATH
+RUN apt-get update && apt-get install -y libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 unzip procps xvfb && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies and clean up
-RUN apt update && \
-    apt -y install --no-install-recommends wget libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 git unzip procps xvfb && \
-    wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/4.12-linux64/hec-hms-4.12-linux64.tar.gz -P / && \
-    tar -xvzf /hec-hms-4.12-linux64.tar.gz -C / && \
-    wget https://services.gradle.org/distributions/gradle-7.3.1-bin.zip -P /tmp && \
-    unzip -d /opt/gradle /tmp/gradle-7.3.1-bin.zip && \
-    ln -s /opt/gradle/gradle-7.3.1 /opt/gradle/latest && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/gradle-7.3.1-bin.zip /hec-hms-4.12-linux64.tar.gz
+# Set working directory
+WORKDIR /app
 
-# Copy the src and project folder and bash script
-COPY run-hms.sh /run-hms.sh
-COPY src /src
+# Copy HEC-HMS and sample data into /app
+COPY --from=builder /tmp/HEC-HMS-4.12 ./HEC-HMS-4.12
+COPY --from=builder /tmp/HEC-HMS-4.12/samples ./HEC-HMS-4.12/samples
 
-RUN chmod +x /run-hms.sh
+# Copy your scripts and src into /app
+COPY run-hms.sh ./run-hms.sh
+COPY src ./src
 
-ENTRYPOINT ["/run-hms.sh"]
+RUN chmod +x ./run-hms.sh
+
+ENTRYPOINT ["./run-hms.sh"]
