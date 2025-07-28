@@ -10,8 +10,8 @@ RUN wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/u
     && tar -xvzf hec-hms.tar.gz -C /tmp \
     && rm hec-hms.tar.gz
 
-# Unzip sample projects shipped with HEC-HMS
-RUN unzip /tmp/HEC-HMS-4.12/samples.zip -d /tmp/HEC-HMS-4.12/samples
+# Unzip sample projects shipped with HEC-HMS (also flatten directory structure to HEC-HMS-4.12/samples)
+RUN unzip /tmp/HEC-HMS-4.12/samples.zip -d /tmp/HEC-HMS-4.12/
 
 # --- Stage 2: Minimal runtime image ---
 FROM debian:bullseye-slim AS runtime
@@ -27,7 +27,7 @@ LABEL base_image="debian:bullseye-slim" \
       about.license_file="/LICENSE" \
       about.tags="hec-hms, FFRD, hydrology"
 
-RUN apt-get update && apt-get install -y libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 unzip procps xvfb && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 unzip procps xvfb python3 && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -36,10 +36,7 @@ WORKDIR /app
 COPY --from=builder /tmp/HEC-HMS-4.12 ./HEC-HMS-4.12
 COPY --from=builder /tmp/HEC-HMS-4.12/samples ./HEC-HMS-4.12/samples
 
-# Copy your scripts and src into /app
-COPY run-hms.sh ./run-hms.sh
-COPY src ./src
+# Copy the cli tool and set as entrypoint
+COPY hms_cli.py ./hms_cli.py
 
-RUN chmod +x ./run-hms.sh
-
-ENTRYPOINT ["./run-hms.sh"]
+ENTRYPOINT ["python3", "./hms_cli.py"]
