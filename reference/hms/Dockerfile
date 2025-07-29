@@ -7,7 +7,6 @@ WORKDIR /app
 COPY ./src /app/src
 COPY ./build.gradle /app
 COPY ./gradlew /app
-COPY ./schema-extension.json /app
 
 # HMS binaries and supporting libraries from HEC
 RUN wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/4.11-linux64/hec-hms-4.11-linux64.tar.gz \
@@ -19,12 +18,11 @@ RUN gradle build --no-daemon \
     && chmod +x /app/build/libs/hms-compute.jar
 
 # Final stage: create the production container
-FROM ffrd_base as prod
+FROM python:3.11-slim as prod
 RUN apt update && apt -y install libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1
 
 COPY --from=javabuilder /app/HEC-HMS-4.11 /HEC-HMS-4.11
 COPY --from=javabuilder /app/build/libs/hms-compute.jar /HEC-HMS-4.11/lib
-COPY --from=javabuilder /app/schema-extension.json /app/schema-extension.json
 
 ENV HMS_HOME=/HEC-HMS-4.11
 ENV JAVA_EXE=$HMS_HOME/jre/bin/java
@@ -37,20 +35,12 @@ ENV CLASSPATH=$HMS_HOME/*:$HMS_HOME/lib/*:$HMS_HOME/lib/hec/*:$HMS_HOME/jre/lib/
 ENV JAVA_OPTS="-Djava.library.path=/HEC-HMS-4.11/bin/gdal:/HEC-HMS-4.11/bin"
 
 RUN chmod +x /HEC-HMS-4.11/jre/bin/java
+RUN apt-get install -y jq unzip
+
+# Unzip samples.zip to /data
+RUN mkdir -p /data && unzip /HEC-HMS-4.11/samples.zip -d /data
 
 WORKDIR /app
-COPY ./run_hms.py /app
-
-# Install jq to allow JSON schema merging
-RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
-
-# Merge base config-schema.json with the extension
-RUN jq -s '.[0] * .[1]' /app/config-schema.json /app/schema-extension.json > /app/config-schema.merged.json \
-    && mv /app/config-schema.merged.json /app/config-schema.json
-    # && rm /app/schema-extension.json
-
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+COPY ./run_hms.sh .
+RUN chmod +x run_hms.sh
+COPY ./hms_schema.json /schemas
