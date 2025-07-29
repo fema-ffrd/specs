@@ -6,7 +6,7 @@
 
 ---
 
-{% include "proposals/conformance/specification.md" %}
+{% include "proposals/conformance/spec.md" %}
 
 ---
 

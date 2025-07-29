@@ -7,11 +7,11 @@ The primary purpose of these documents is to establish a standardized framework 
 ## Scope
 The scope of these documents encompasses several key components:
 
- - Standards and Specifications: These documents outline the standards and specifications that guide the development of tools within the FFRD initiative. They ensure that all tools adhere to agreed-upon norms, promoting interoperability and quality across different systems and applications.
+ - **Standards and Specifications**: These documents outline the standards and specifications that guide the development of tools within the FFRD initiative. They ensure that all tools adhere to agreed-upon norms, promoting interoperability and quality across different systems and applications.
 
- - Schemas: By defining data structures and constraints, schemas facilitate accurate data exchange and integration. This ensures that flood risk data is both consistent and reliable, supporting comprehensive risk assessments.
+ - **Reference Implementations**: These provide practical examples and benchmarks for tool development, illustrating how standards and specifications can be applied in real-world contexts. They serve as a foundation for further studies and analyses within the FFRD initiative.
 
- - Reference Implementations: These provide practical examples and benchmarks for tool development, illustrating how standards and specifications can be applied in real-world contexts. They serve as a foundation for further studies and analyses within the FFRD initiative.
+ - **Schemas**: By defining data structures and constraints, schemas facilitate accurate data exchange and integration. This ensures that flood risk data is both consistent and reliable, supporting comprehensive risk assessments.
 
 Overall, these documents and resources lay the groundwork for the development of tools and methodologies that can be used not only within the FFRD initiative but also as a foundation for broader studies and analyses in flood risk assessment and management. They support informed decision-making and policy development, ultimately enhancing the nation’s preparedness and resilience to flood hazards.
 

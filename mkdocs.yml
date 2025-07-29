@@ -31,26 +31,10 @@ nav:
     - scope.md
     - terms.md
 
-  - Standards:
-    - standards/base_image.md
-    - standards/hms_sim.md
-    - standards/ras_sim.md
-
-  - Specifications:
-    - specifications/base_image.md
-    - specifications/hms_sim.md
-    - specifications/ras_sim.md
-
-  - Schemas:
-    - schemas/base_image.md
-    - schemas/hms_sim.md
-    - schemas/ras_sim.md
-
-
-  - Reference Implementations:
-    - reference/base_image.md
-    - reference/hms_sim.md
-    - reference/ras_sim.md
+  - Drafts:
+    - draft/base_image/base_image.md
+    - draft/hms_sim/hms_sim.md
+    - draft/ras_sim/ras_sim.md
 
   - Proposals:
     - proposals/conformance/conformance.md

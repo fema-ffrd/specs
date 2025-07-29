@@ -1,8 +1,8 @@
-# 📚 HEC-RAS Sim
+## 📚 Reference
 
 This reference implementation provides a containerized environment for running HEC-RAS models on Linux.
 
-## Container Details
+### Container Details
 
 - **Base Image**: `registry.access.redhat.com/ubi8/ubi:8.5`
 - **Installed Tools**: `wget`, `unzip`, `jq`
@@ -12,21 +12,21 @@ This reference implementation provides a containerized environment for running H
   - `/ras/v61`: HEC-RAS executables
   - `/sim`: Working directory for simulation files and results
 
-## Usage
+### Usage
 
-### Run a HEC-RAS Model
+#### Run a HEC-RAS Model
 ```bash
 docker run --rm -v $(pwd):/sim ras-reference
 ```
 This will execute `/sim/run-model.sh` inside the container, running the HEC-RAS model with files in `/sim`.
 
-## Entrypoint
+### Entrypoint
 The default entrypoint is:
 ```dockerfile
 ENTRYPOINT ["/sim/run-model.sh"]
 ```
 
-## Source Files
+### Source Files
 - `Dockerfile`
 - `run-model.sh`
 - HEC-RAS binaries and libraries (downloaded during build)

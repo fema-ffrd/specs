@@ -1,14 +1,14 @@
-# 🗃️ HEC-RAS Sim
+## 🗃️ Schema
 
 This page includes the complete configuration schema used by the HEC-RAS image to simulate hydraulics.
 
-## 🔍 JSON Schema
+### 🔍 JSON Schema
 
 ~~~json
-{% include "../../reference/ras/ras_schema.json" %}
+{% include "../../../reference/ras/ras_schema.json" %}
 ~~~
 
 
-## 🧾 Notes
+### 🧾 Notes
 
 

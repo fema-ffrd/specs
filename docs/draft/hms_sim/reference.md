@@ -1,10 +1,8 @@
-# 📚 HEC-HMS Sim
-
-# Reference Implementation: HEC-HMS Model Execution Container
+## 📚 Reference
 
 This reference implementation provides a containerized environment for running HEC-HMS models and custom compute modules.
 
-## Container Details
+### Container Details
 
 - **Build Stage**: Uses `gradle:7.3.1-jdk17` to build custom Java modules.
 - **Production Stage**: Uses `python:3.11-slim` and installs required system libraries.
@@ -12,21 +10,21 @@ This reference implementation provides a containerized environment for running H
 - **Custom Compute Module**: Built as `hms-compute.jar` and placed in `/HEC-HMS-4.11/lib`.
 - **Sample Data**: Unzipped to `/data` for testing and demonstration.
 
-## Usage
+### Usage
 
-### Run a HEC-HMS Model
+#### Run a HEC-HMS Model
 ```bash
 docker run --rm -v $(pwd):/data hms-reference /app/run_hms.sh
 ```
 This will execute `/app/run_hms.sh` inside the container, running the HEC-HMS model with files in `/data`.
 
-## Entrypoint
+### Entrypoint
 The default entrypoint is:
 ```dockerfile
 ENTRYPOINT ["/app/run_hms.sh"]
 ```
 
-## Source Files
+### Source Files
 - `Dockerfile`
 - `run_hms.sh`
 - `hms_schema.json`
