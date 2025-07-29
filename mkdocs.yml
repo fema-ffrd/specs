@@ -1,4 +1,4 @@
-site_name: FEMA FFRD Specifications
+site_name: "FFRD | Proposed Standards and Specifications"
 site_url: https://fema-ffrd.github.io/specs
 
 theme:
@@ -30,14 +30,31 @@ nav:
     - index.md
     - scope.md
     - terms.md
-  - Containers:
-    - containers/base.md
-    - containers/plugin.md
-    - containers/examples.md
+
+  - Standards:
+    - standards/base_image.md
+    - standards/hms_sim.md
+    - standards/ras_sim.md
+
+  - Specifications:
+    - specifications/base_image.md
+    - specifications/hms_sim.md
+    - specifications/ras_sim.md
+
   - Schemas:
-    - schemas/base_container.md
-  - Processes:
-    - processes/hechms.md
-    - processes/hecras.md
-  - Appendix: 
+    - schemas/base_image.md
+    - schemas/hms_sim.md
+    - schemas/ras_sim.md
+
+
+  - Reference Implementations:
+    - reference/base_image.md
+    - reference/hms_sim.md
+    - reference/ras_sim.md
+
+  - Proposals:
+    - proposals/conformance/conformance.md
+
+  - Appendix:
     - references.md
+

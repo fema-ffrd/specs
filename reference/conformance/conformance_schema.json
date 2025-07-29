@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/conformance_schema.json",
+  "title": "Conformance Execution Schema",
+  "description": "Configuration for running conformance workflows with HEC-HMS, HEC-RAS, and base operations.",
+  "type": "object",
+  "properties": {
+    "hms_schema": {
+      "$ref": "https://example.com/schemas/hms_schema.json"
+    },
+    "ras_schema": {
+      "$ref": "https://example.com/schemas/ras_schema.json"
+    },
+    "base_schema": {
+      "$ref": "https://example.com/schemas/base_schema.json"
+    }
+  },
+  "required": [
+    "hms_schema",
+    "ras_schema",
+    "base_schema"
+  ],
+  "additionalProperties": false
+}

@@ -32,6 +32,8 @@ RUN chmod +x /usr/local/bin/run-ras-model
 # Set environment variables from file
 COPY  hms_schema.json /schemas/hms_schema.json
 COPY  ras_schema.json /schemas/ras_schema.json
+COPY  conformance.json /schemas/conformance.json
+
 COPY .env.runtime /tmp/env
 RUN set -a && . /tmp/env && set +a && rm /tmp/env
 

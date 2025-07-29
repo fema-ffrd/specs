@@ -1,4 +1,4 @@
-# Base & Plugin Image Specification
+<!-- # Base & Plugin Image Specification
 
 This specification defines the behavior, conventions, and schema expectations for **base** and **plugin** container images used in the FFRD pipeline.
 
@@ -14,18 +14,6 @@ The base image provides reusable logic for:
 - Uploading files to S3
 - Validating configuration JSON against a schema
 - Executing downstream plugins
-
----
-
-### 🔐 Environment Variables
-
-| Variable       | Description                            |
-| -------------- | -------------------------------------- |
-| `SRC_<NAME>`   | S3 source URI (e.g. `s3://bucket/key`) |
-| `DST_<NAME>`   | Local path the file is downloaded to   |
-| `.env.runtime` | File auto-generated for subprocesses   |
-
-These are set automatically after downloads are processed.
 
 ---
 
@@ -177,4 +165,4 @@ jq -s '.[0] * .[1]' base-schema.json plugin-schema.json > merged.json
 - [`download.py`](../tools/download.py)
 - [`entrypoint.py`](../entrypoint.py)
 - Base schema: `config-schema.json`
-
+ -->

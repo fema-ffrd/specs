@@ -1,13 +1,13 @@
-# 📑 Base Container Schema Reference
+# 🗃️ FFRD Base Container
 
 This page includes the complete configuration schema used by the base image to validate plugin execution parameters.
 
 It is provided as a reference for plugin authors and base image reimplementers.
 
-## 🔍 JSON Schema (Raw View)
+## 🔍 JSON Schema
 
 ~~~json
-{% include "schemas/base_container.json" %}
+{% include "../../reference/base/base_schema.json" %}
 ~~~
 
 

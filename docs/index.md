@@ -1,12 +1,6 @@
-# FEMA FFRD Specifications
-
+# About FFRD
 ![FFRD Overview](images/ffrd-overview.png)
-
-## About FFRD
-FEMA’s Future of Flood Risk Data (FFRD) initiative provides a more
-comprehensive picture of the country’s flood hazards and risk by leveraging new
-technologies to include more efficient, accurate, and consistent flood risk
-information across the nation.
+FEMA’s Future of Flood Risk Data (FFRD) initiative aims to provide a more comprehensive picture of the country's flood hazards and risks. It focuses on delivering efficient, accurate, and consistent flood risk with uncertainty nationwide. This set of documents is intended to improve collaboration among stakeholders and document the development of tools that can be used within the FFRD initiative. By utilizing standardized data formats, detailed specifications, structured schemas, and reference implementations, the tools developed will serve as a foundation for studies and analyses that further enhance flood risk assessment and management. These efforts will aid in ensuring better preparedness and resilience across communities, ultimately supporting informed decision-making and policy development.
 
 ## More information
 * [The Future of Flood Risk Data (FFRD)](https://www.fema.gov/print/pdf/node/578088)
