@@ -1,0 +1,148 @@
+{
+  "ras_schema": {
+    "model_directory": "/data",
+    "model_name": "Muncie"
+  },
+  "hms_schema": {
+    "project_file": "/data/tenk.hms",
+    "sim_name": "Jan 96 storm"
+  },
+  "base_schema": {
+    "operations": [
+      "download",
+      "validate"
+    ],
+    "s3Downloads": [
+      {
+        "name": "hrapcells",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/regions/hrapcells",
+        "destinationPath": "/data/regions/hrapcells"
+      },
+      {
+        "name": "Jan_96_control",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Jan_96.control",
+        "destinationPath": "/data/Jan_96.control"
+      },
+      {
+        "name": "Jan_96_storm_dss",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Jan_96_storm.dss",
+        "destinationPath": "/data/Jan_96_storm.dss"
+      },
+      {
+        "name": "Jan_96_storm_log",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Jan_96_storm.log",
+        "destinationPath": "/data/Jan_96_storm.log"
+      },
+      {
+        "name": "Jan_96_storm_out",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Jan_96_storm.out",
+        "destinationPath": "/data/Jan_96_storm.out"
+      },
+      {
+        "name": "Stage3_HRAP_met",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Stage3_HRAP.met",
+        "destinationPath": "/data/Stage3_HRAP.met"
+      },
+      {
+        "name": "Tenk_1_basin",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/Tenk_1.basin",
+        "destinationPath": "/data/Tenk_1.basin"
+      },
+      {
+        "name": "hrap_dss",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/hrap.dss",
+        "destinationPath": "/data/hrap.dss"
+      },
+      {
+        "name": "hrapcells_dup",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/hrapcells",
+        "destinationPath": "/data/hrapcells"
+      },
+      {
+        "name": "tenk_dss",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.dss",
+        "destinationPath": "/data/tenk.dss"
+      },
+      {
+        "name": "tenk_gage",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.gage",
+        "destinationPath": "/data/tenk.gage"
+      },
+      {
+        "name": "tenk_grid",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.grid",
+        "destinationPath": "/data/tenk.grid"
+      },
+      {
+        "name": "tenk_hms",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.hms",
+        "destinationPath": "/data/tenk.hms"
+      },
+      {
+        "name": "tenk_log",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.log",
+        "destinationPath": "/data/tenk.log"
+      },
+      {
+        "name": "tenk_out",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.out",
+        "destinationPath": "/data/tenk.out"
+      },
+      {
+        "name": "tenk_pdata",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.pdata",
+        "destinationPath": "/data/tenk.pdata"
+      },
+      {
+        "name": "tenk_regn",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.regn",
+        "destinationPath": "/data/tenk.regn"
+      },
+      {
+        "name": "tenk_run",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/hms/tenk.run",
+        "destinationPath": "/data/tenk.run"
+      },
+      {
+        "name": "p04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.p04",
+        "destinationPath": "/data/Muncie.p04"
+      },
+      {
+        "name": "proj_file",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.prj",
+        "destinationPath": "/data/Muncie.prj"
+      },
+      {
+        "name": "x04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.x04",
+        "destinationPath": "/data/Muncie.x04"
+      },
+      {
+        "name": "u01_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.u01",
+        "destinationPath": "/data/Muncie.u01"
+      },
+      {
+        "name": "b04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.b04",
+        "destinationPath": "/data/Muncie.b04"
+      },
+      {
+        "name": "c04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.c04",
+        "destinationPath": "/data/Muncie.c04"
+      },
+      {
+        "name": "r04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.r04",
+        "destinationPath": "/data/Muncie.r04"
+      },
+      {
+        "name": "p04_hdf",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.p04.tmp.hdf",
+        "destinationPath": "/data/Muncie.p04.tmp.hdf"
+      }
+    ]
+  }
+}

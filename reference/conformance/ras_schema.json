@@ -25,8 +25,7 @@
   },
   "required": [
     "model_directory",
-    "model_name",
-    "base_schema"
+    "model_name"
   ],
   "additionalProperties": false
 }

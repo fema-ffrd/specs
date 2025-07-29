@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/hms_schema.json",
+  "title": "HEC-HMS Execution Schema",
+  "description": "Configuration for running a HEC-HMS model using a project file.",
+  "type": "object",
+  "properties": {
+    "program": {
+      "type": "string",
+      "enum": [
+        "hms"
+      ]
+    },
+    "project_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sim_name": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_file",
+    "sim_name"
+  ],
+  "additionalProperties": false
+}
