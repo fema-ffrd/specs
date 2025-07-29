@@ -9,7 +9,7 @@ public class RunHMS {
             System.exit(1);
         }
 
-        System.out.println("Starting hms-runner");
+        System.out.println("Starting hms-simulation");
 
         String hmsFilePath = args[0];
         String simulationName = args[1];
@@ -23,7 +23,7 @@ public class RunHMS {
         System.out.println("Simulation run completed for " + hmsFilePath);
         project.close();
 
-        System.out.println("Exiting hms-runner");
+        System.out.println("Exiting hms-simulation");
         System.exit(0);
     }
 

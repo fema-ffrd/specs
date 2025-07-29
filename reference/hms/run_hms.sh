@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-# usage: ./run_hms.sh '{"project_file":"/data/tenk","sim_name":"Jan 96 storm"}'
+# usage: ./run_hms.sh '{"hms_schema":{"project_file":"/data/samples/tenk/tenk.hms","sim_name":"Jan 96 storm"}}'
 if [ $# -eq 1 ]; then
     CONFIG_JSON_STR="$1"
     echo "Received JSON config: $CONFIG_JSON_STR"
@@ -8,21 +8,19 @@ if [ $# -eq 1 ]; then
     SIMNAME=$(echo "$CONFIG_JSON_STR" | jq -r '.hms_schema.sim_name')
     echo "Parsed project_file: $PROJFILE"
     echo "Parsed sim_name: $SIMNAME"
-    SIMDIR=$(dirname "$PROJFILE")
+
 else
-    SIMDIR=$1
-    PROJFILE=$2
-    echo "Received SIMDIR: $SIMDIR"
+    PROJFILE=$1
+    SIMNAME=$2
     echo "Received PROJFILE: $PROJFILE"
+    echo "Received SIMNAME: $SIMNAME"
 fi
 
-#!/bin/bash
 set -e
 
 echo ""
 echo "---------Run HMS Simulation----------"
 echo ""
-echo "SIMDIR: $SIMDIR"
 echo "PROJFILE: $PROJFILE"
 echo "SIMNAME: $SIMNAME"
 echo "Sending $SIMNAME to hms-compute"
@@ -35,3 +33,11 @@ java \
   -jar /HEC-HMS-4.11/lib/hms-compute.jar \
   "$PROJFILE" \
   "$SIMNAME"
+
+if [ $? -eq 0 ]; then
+    echo "✅ HMS simulation completed successfully."
+    exit 0
+else
+    echo "❌ HMS simulation failed!" >&2
+    exit 1
+fi

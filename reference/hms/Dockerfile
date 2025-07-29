@@ -19,7 +19,7 @@ RUN gradle build --no-daemon \
 
 # Final stage: create the production container
 FROM python:3.11-slim as prod
-RUN apt update && apt -y install libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1
+RUN apt update && apt -y install jq unzip libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1
 
 COPY --from=javabuilder /app/HEC-HMS-4.11 /HEC-HMS-4.11
 COPY --from=javabuilder /app/build/libs/hms-compute.jar /HEC-HMS-4.11/lib
@@ -35,7 +35,6 @@ ENV CLASSPATH=$HMS_HOME/*:$HMS_HOME/lib/*:$HMS_HOME/lib/hec/*:$HMS_HOME/jre/lib/
 ENV JAVA_OPTS="-Djava.library.path=/HEC-HMS-4.11/bin/gdal:/HEC-HMS-4.11/bin"
 
 RUN chmod +x /HEC-HMS-4.11/jre/bin/java
-RUN apt-get install -y jq unzip
 
 # Unzip samples.zip to /data
 RUN mkdir -p /data && unzip /HEC-HMS-4.11/samples.zip -d /data
