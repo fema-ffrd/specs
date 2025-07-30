@@ -1,25 +1,44 @@
-site_name: FEMA FFRD Specifications
+site_name: "FFRD | Proposed Standards and Specifications"
 site_url: https://fema-ffrd.github.io/specs
+
 theme:
   name: material
   custom_dir: overrides
+  features:
+    - navigation.expand
+
+plugins:
+  - search
+  - include-markdown
+  - macros
+
 repo_url: https://github.com/fema-ffrd/specs
+
 extra:
   version:
     provider: mike
+
 markdown_extensions:
-  - pymdownx.superfences:  # mermaid diagrams
+  - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+
 nav:
-  - "Overview": "index.md"
-  - "scope.md"
-  - "terms.md"
-  - "3. Processes":
-    - "processes/hechms.md"
-    - "processes/hecras.md"
-  - "A. Appendix": 
-    - "references.md"
-  
+  - Overview:
+    - index.md
+    - scope.md
+    - terms.md
+
+  - Drafts:
+    - draft/base_image/base_image.md
+    - draft/hms_sim/hms_sim.md
+    - draft/ras_sim/ras_sim.md
+
+  - Proposals:
+    - proposals/conformance/conformance.md
+
+  - Appendix:
+    - references.md
+

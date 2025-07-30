@@ -1,0 +1,32 @@
+{
+  "base_schema": {
+    "operations": ["download", "validate"],
+    "s3Downloads": [
+      {
+        "name": "proj_file",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.prj",
+        "destinationPath": "/data/Muncie.prj"
+      },
+      {
+        "name": "b04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.b04",
+        "destinationPath": "/data/Muncie.b04"
+      },
+      {
+        "name": "x04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.x04",
+        "destinationPath": "/data/Muncie.x04"
+      },
+      {
+        "name": "r04_data",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.r04",
+        "destinationPath": "/data/Muncie.r04"
+      },
+      {
+        "name": "hdf_temp",
+        "s3Uri": "s3://trinity-pilot/stac/containers/data/ras/Muncie.p04.tmp.hdf",
+        "destinationPath": "/data/Muncie.p04.tmp.hdf"
+      }
+    ]
+  }
+}
