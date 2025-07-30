@@ -42,7 +42,7 @@ docker run -v "C:\project\Salsipuedes_Creek:/project/Salsipuedes_Creek" hec-hms-
   --project-dir /project/Salsipuedes_Creek --project-name Salsipuedes_Creek --sim-name Feb_2017
 
 example 2:
-docker run -v "C:\project\river_bend:/project/river_bend" hec-hms-4-12-runner --project-dir /project/river_bend river_bend "Minimum Facility"
+docker run -v "C:\project\river_bend:/project/river_bend" hec-hms-4-12-runner --project-dir /project/river_bend --project-name river_bend --sim-name "Minimum Facility"
 ```
 
 ## Running the container in interactive mode (with the tenk example project):
