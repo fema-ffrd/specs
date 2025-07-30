@@ -4,9 +4,8 @@ This page includes the proposed configuration schema used by the conformance ima
 
 ### 🔍 JSON Schema
 
-~~~json
+```json
 {% include "../../../reference/conformance/conformance_schema.json" %}
-~~~
-
+```
 
 ### 🧾 Notes

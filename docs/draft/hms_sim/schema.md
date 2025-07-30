@@ -4,10 +4,8 @@ This page includes the complete configuration schema used by the HEC-HMS image t
 
 ### 🔍 JSON Schema
 
-~~~json
+```json
 {% include "../../../reference/hms/hms_schema.json" %}
-~~~
+```
 
 ### 🧾 Notes
-
-

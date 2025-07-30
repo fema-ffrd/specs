@@ -4,11 +4,8 @@ This page includes the complete configuration schema used by the HEC-RAS image t
 
 ### 🔍 JSON Schema
 
-~~~json
+```json
 {% include "../../../reference/ras/ras_schema.json" %}
-~~~
-
+```
 
 ### 🧾 Notes
-
-
