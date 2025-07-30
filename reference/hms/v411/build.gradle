@@ -1,0 +1,34 @@
+//The Gradle JVM needs to be Java 1.8. It'll build with anything, but you're gonna run into runtime errors "Java lang no method found" if you dont.
+
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+configurations {
+    linux_x64
+}
+dependencies {
+    implementation files('/app/HEC-HMS-4.11/hms.jar')
+    implementation fileTree(dir: '/app/HEC-HMS-4.11/lib', include: '*.jar')
+}
+
+jar {
+    zip64 = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+         attributes 'Main-Class': 'main.java.ffrd.hmscontainer.runner.RunHMS'
+    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    from {
+        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+    }
+       archiveName 'hms-compute.jar'
+}
+
+group 'ffrd'
+version '0.0.1'

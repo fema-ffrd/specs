@@ -2,5 +2,7 @@
 name = "fema-ffrd-specs"
 version = "0.0.1"
 description = "FEMA FFRD Specifications"
-dependencies = ["mkdocs-material", "mike"]
+dependencies = ["mkdocs-material", "mike","mkdocs-macros-plugin", "mkdocs-include-markdown-plugin"]
 
+[tool.setuptools.packages.find]
+exclude = ["*"]
