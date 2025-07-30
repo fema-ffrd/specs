@@ -1,6 +1,3 @@
-# Conformance Proposal
-
----
 
 {% include "proposals/conformance/standard.md" %}
 

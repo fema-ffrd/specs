@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://example.com/schemas/conformance_schema.json",
   "title": "Conformance Execution Schema",
+  "version": "0.1.0",
   "description": "Configuration for running conformance workflows with HEC-HMS, HEC-RAS, and base operations.",
   "type": "object",
   "properties": {

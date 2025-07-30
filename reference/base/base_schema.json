@@ -3,7 +3,7 @@
   "$id": "https://example.com/schemas/base_schema.json",
   "title": "Base Configuration Schema",
   "description": "Defines the base-level configuration for operations such as downloading, uploading, and validating files from S3.",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "object",
   "properties": {
     "operations": {
@@ -11,7 +11,11 @@
       "description": "List of operations this configuration enables (e.g. downloading, uploading, and validating).",
       "items": {
         "type": "string",
-        "enum": ["download", "upload", "validate"]
+        "enum": [
+          "download",
+          "upload",
+          "validate"
+        ]
       },
       "minItems": 1
     },
@@ -39,7 +43,11 @@
             "minLength": 1
           }
         },
-        "required": ["name", "s3Uri", "destinationPath"],
+        "required": [
+          "name",
+          "s3Uri",
+          "destinationPath"
+        ],
         "additionalProperties": false
       },
       "minItems": 1
@@ -68,12 +76,18 @@
             "pattern": "^s3://.+/.+"
           }
         },
-        "required": ["name", "path", "s3Uri"],
+        "required": [
+          "name",
+          "path",
+          "s3Uri"
+        ],
         "additionalProperties": false
       },
       "minItems": 1
     }
   },
-  "required": ["operations"],
+  "required": [
+    "operations"
+  ],
   "additionalProperties": false
 }

@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://example.com/schemas/hms_schema.json",
   "title": "HEC-HMS Execution Schema",
+  "version": "0.1.0",
   "description": "Configuration for running a HEC-HMS model using a project file.",
   "type": "object",
   "properties": {

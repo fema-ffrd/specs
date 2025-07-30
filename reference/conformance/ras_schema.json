@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://example.com/schemas/ras_schema.json",
   "title": "HEC-RAS Execution Schema",
+  "version": "0.1.0",
   "description": "Configuration for running a HEC-RAS model using a project file.",
   "type": "object",
   "properties": {
@@ -18,9 +19,6 @@
     "model_name": {
       "type": "string",
       "minLength": 1
-    },
-    "base_schema": {
-      "$ref": "https://example.com/schemas/base_schema.json"
     }
   },
   "required": [

@@ -3,7 +3,7 @@
 ## 📐 Standard
 
 ### Purpose
-To ensure consistent validation of configuration files and seamless interoperability with Amazon S3 for file upload and download operations.
+To ensure consistent validation of configuration files and seamless interoperability with Object Stores (starting with Amazon S3) for file upload and download operations.
 
 ### Scope
 This standard applies to all systems and projects that require:

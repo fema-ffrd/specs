@@ -16,16 +16,15 @@ This specification describes the requirements for a containerized tool that vali
 - Use AWS credentials from environment variables or configuration files.
 
 #### 3. Containerization
-- Base image: `python:3.11-slim`
-- Include Python scripts for validation, upload, and download.
+- Base image: No limitations on what base image or runtime are imposed.
+- Include scripts for validation, upload, and download.
 - Expose scripts as executable commands in the container.
 
 #### 4. Usage
-- Entrypoint: Validation script (`validate.py`)
-- Additional commands: `download.py`, `upload.py`, `download_from_config.py`
+- Entrypoint: Validation script (`validate`)
+- Additional commands: `download`, `upload`, `download_from_config`
 
 #### 5. Dependencies
-- Python packages: `boto3`, `python-dotenv`, `jsonschema`, `referencing>=0.30.0`
 - System package: `jq`
 
 ### Example Commands
