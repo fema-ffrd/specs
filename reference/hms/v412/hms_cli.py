@@ -4,11 +4,7 @@ import subprocess
 import tempfile
 import os
 import sys
-
-# Defaults for the tenk example
-TENK_PROJECT_DIR = "/app/HEC-HMS-4.12/samples/tenk"
-TENK_PROJECT_NAME = "tenk"
-TENK_SIM_NAME = "Jan 96 storm"
+import json
 
 JYTHON_TEMPLATE = '''from hms.model.JythonHms import *
 OpenProject("{project_name}", "{project_dir}")
@@ -18,23 +14,42 @@ SaveAllProjectComponents()
 
 def main():
     parser = argparse.ArgumentParser(description="HEC-HMS CLI Runner")
-    parser.add_argument('--project-dir', type=str, help='Path to the HEC-HMS project directory')
-    parser.add_argument('--project-name', type=str, help='HEC-HMS project name')
-    parser.add_argument('--sim-name', type=str, help='Simulation name to run')
+    parser.add_argument('--project_file', type=str, help='Path to the .hms project file')
+    parser.add_argument('--sim_name', type=str, help='Simulation name to run')
     parser.add_argument('--example', choices=['tenk'], help='Run a built-in example project')
+    parser.add_argument('--json_file', type=str, help='Path to a JSON file with hms_schema')
     args = parser.parse_args()
 
-    if args.example == 'tenk':
-        project_dir = TENK_PROJECT_DIR
-        project_name = TENK_PROJECT_NAME
-        sim_name = TENK_SIM_NAME
-    elif args.project_dir and args.project_name and args.sim_name:
-        project_dir = args.project_dir
-        project_name = args.project_name
-        sim_name = args.sim_name
-    else:
-        print("Error: You must specify either --example or all of --project-dir, --project-name, and --sim-name.")
+    input_methods = sum([bool(args.example), bool(args.json_file), bool(args.project_file and args.sim_name)])
+    if input_methods != 1:
+        print("Error: Specify exactly one input method: --example, --json_file, or both --project_file and --sim_name.")
         sys.exit(1)
+
+    if args.example == 'tenk':
+        hms_file = "/app/HEC-HMS-4.12/samples/tenk/tenk.hms"
+        sim_name = "Jan 96 storm"
+    elif args.json_file:
+        try:
+            with open(args.json_file, 'r') as jf:
+                data = json.load(jf)
+            hms_schema = data.get('hms_schema', {})
+            hms_file = hms_schema.get('project_file')
+            sim_name = hms_schema.get('sim_name')
+        except Exception as e:
+            print(f"Error reading or parsing JSON: {e}")
+            sys.exit(1)
+        if not hms_file or not sim_name:
+            print("Error: JSON must contain hms_schema with project_file and sim_name.")
+            sys.exit(1)
+    else:
+        hms_file = args.project_file
+        sim_name = args.sim_name
+
+    if not hms_file or not hms_file.lower().endswith('.hms'):
+        print("Error: project_file must be a .hms file")
+        sys.exit(1)
+    project_dir = os.path.dirname(os.path.abspath(hms_file))
+    project_name = os.path.splitext(os.path.basename(hms_file))[0]
 
     # Generate the Jython script
     jython_script = JYTHON_TEMPLATE.format(
