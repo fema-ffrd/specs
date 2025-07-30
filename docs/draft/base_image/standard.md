@@ -7,6 +7,7 @@ To ensure consistent validation of configuration files and seamless interoperabi
 
 ### Scope
 This standard applies to all systems and projects that require:
+
 - Validation of configuration files against a defined schema.
 - Uploading and downloading files to/from Amazon S3.
 - Use of Python-based reference implementations for these operations.
