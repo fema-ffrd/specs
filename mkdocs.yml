@@ -35,6 +35,7 @@ nav:
     - draft/base_image/base_image.md
     - draft/hms_sim/hms_sim.md
     - draft/ras_sim/ras_sim.md
+    - draft/orchestration/orchestration.md
 
   - Proposals:
     - proposals/conformance/conformance.md
