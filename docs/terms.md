@@ -1,6 +1,5 @@
 # Key terms, definitions, and abbreviations
 
-
 ## Definitions
 
 ### Standards
@@ -19,8 +18,8 @@
 
 **Scope**: Specifications can be very detailed and may include data formats, algorithms, interfaces, protocols, and other technical elements required to implement a system or component.
 
-
 ### Schemas
+
 **Definition**: A schema is a structured framework or blueprint that defines the organization, structure, and constraints of data within a database or system. Schemas ensure consistency and validate data inputs and outputs across systems.
 
 **Purpose**: The main purpose of a schema is to provide a clear and unambiguous definition of data structures, enabling seamless data interchange and ensuring data integrity and validation.
@@ -28,6 +27,7 @@
 **Scope**: Schemas are often used in conjunction with both standards and specifications. They define the format and structure of data, allowing for consistent data exchange and storage across different systems and applications.
 
 ### Reference Implementations
+
 **Definition**: A reference implementation is a sample implementation of a standard or specification, provided to demonstrate how it can be applied in practice. It serves as a concrete example to guide developers in their own implementations.
 
 **Purpose**: The main purpose of a reference implementation is to illustrate the practical application of a standard or specification, offering insights into potential challenges and solutions. It can also serve as a benchmark for testing and validation.
