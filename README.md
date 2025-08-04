@@ -7,9 +7,10 @@ https://fema-ffrd.github.io/specs/
 ## Setup
 
 ### Dev Container Setup (Optional)
+
 1. Open this repository in VS Code
-2. When prompted, click "Reopen in Container" or use the Command Palette (Ctrl+Shift+P) and select "Dev Containers: Reopen in Container"
-3. The container will automatically set up the environment and install dependencies
+1. When prompted, click "Reopen in Container" or use the Command Palette (Ctrl+Shift+P) and select "Dev Containers: Reopen in Container"
+1. The container will automatically set up the environment and install dependencies
 
 #### What Gets Installed
 
@@ -69,6 +70,7 @@ argo logs <workflow-name>
 - Read the [Argo Workflows documentation](https://argo-workflows.readthedocs.io/)
 
 ### Documentation Setup
+
 1. Create a Python virtual environment.
 
 ```

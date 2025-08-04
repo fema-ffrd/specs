@@ -108,21 +108,25 @@ spec:
 #### Key Implementation Features
 
 ##### DAG Structure
+
 - Uses Argo's DAG template to define explicit task dependencies (`dependencies: [generate-number]`)
 - Demonstrates parallel execution through steps with `withItems` parameterization
 - Shows sequential workflow phases (generate → process → collect)
 
 ##### Container Execution
+
 - Executes standard containers (Alpine Linux) as a pattern for FFRD containers
 - Demonstrates passing command line arguments to containers
 - Shows volume mounting for data access across all tasks
 
 ##### Data Sharing
+
 - Uses persistent volume claims (`volumeClaimTemplates`) for shared storage
 - Consistent volume mounting (`/work`) across all workflow tasks
 - Demonstrates file-based data exchange between workflow steps
 
 ##### Parameterization
+
 - Shows parameter passing with `withItems` for parallel task execution
 - Demonstrates template parameter usage with `inputs.parameters.item`
 - Illustrates how to iterate over lists to create multiple parallel tasks
@@ -130,12 +134,14 @@ spec:
 #### Deployment Requirements
 
 ##### Infrastructure
+
 - Kubernetes cluster
 - Argo Workflows
 - Container runtime (Docker, containerd, or CRI-O)
 - Persistent storage provisioner
 
 ##### Configuration
+
 - Argo Workflows controller installation
 - RBAC configuration for workflow execution
 - Storage class configuration for volume provisioning
@@ -144,18 +150,21 @@ spec:
 #### Usage Examples
 
 ##### Validate Workflow
+
 ```bash
 # Validate the workflow definition
 argo lint reference.yaml
 ```
 
 ##### Submit Workflow
+
 ```bash
 # Submit the workflow to Argo
 argo submit reference.yaml
 ```
 
 ##### Monitor Execution
+
 ```bash
 # List all workflows
 argo list
@@ -168,6 +177,7 @@ argo logs dag-example-abc123
 ```
 
 ##### Access Results
+
 ```bash
 # View workflow status and results
 argo get dag-example-abc123
@@ -178,7 +188,7 @@ argo get dag-example-abc123
 While this reference uses Argo Workflows, other orchestration systems can satisfy FFRD requirements:
 
 - **Apache Airflow**: Python-based DAG orchestration with extensive integrations
-- **Prefect**: Modern workflow orchestration with dynamic DAG generation  
+- **Prefect**: Modern workflow orchestration with dynamic DAG generation
 - **Kubeflow Pipelines**: ML-focused orchestration with container-native execution
 - **Temporal**: Durable execution framework with strong consistency guarantees
 - **Custom Solutions**: Purpose-built orchestration systems meeting FFRD specifications
