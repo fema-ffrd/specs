@@ -6,8 +6,4 @@
 
 ---
 
-{% include "draft/orchestration/schema.md" %}
-
----
-
 {% include "draft/orchestration/reference.md" %}
