@@ -1,0 +1,42 @@
+# --- Stage 1: Download and extract HEC-HMS and sample data ---
+FROM debian:bullseye-slim AS builder
+
+RUN apt-get update && apt-get install -y ca-certificates wget unzip && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# Download and extract HEC-HMS
+RUN wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/4.12-linux64/hec-hms-4.12-linux64.tar.gz -O hec-hms.tar.gz \
+    && tar -xvzf hec-hms.tar.gz -C /tmp \
+    && rm hec-hms.tar.gz
+
+# Unzip sample projects shipped with HEC-HMS (also flatten directory structure to HEC-HMS-4.12/samples)
+RUN unzip /tmp/HEC-HMS-4.12/samples.zip -d /tmp/HEC-HMS-4.12/
+
+# --- Stage 2: Minimal runtime image ---
+FROM debian:bullseye-slim AS runtime
+
+LABEL base_image="debian:bullseye-slim" \
+      version="0.1.0"   \
+      software="hec hms runner" \
+      software.version="4.12" \
+      about.summary="a containerized tool to run hec-hms version 4.12 (bundled JRE only, multi-stage)" \
+      about.home="https://github.com/fema-ffrd/specs" \
+      about.documentation="" \
+      about.license="MIT" \
+      about.license_file="/LICENSE" \
+      about.tags="hec-hms, FFRD, hydrology"
+
+RUN apt-get update && apt-get install -y libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 unzip procps xvfb python3 && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy HEC-HMS and sample data into /app
+COPY --from=builder /tmp/HEC-HMS-4.12 ./HEC-HMS-4.12
+COPY --from=builder /tmp/HEC-HMS-4.12/samples ./HEC-HMS-4.12/samples
+
+# Copy the cli tool and set as entrypoint
+COPY hms_cli.py ./hms_cli.py
+
+ENTRYPOINT ["python3", "./hms_cli.py"]

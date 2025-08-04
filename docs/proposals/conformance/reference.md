@@ -13,22 +13,27 @@ This reference implementation provides a containerized environment for running b
 ## Usage
 
 ### Run HEC-HMS Model
+
 ```bash
 docker run --rm -v $(pwd):/data conformance-reference /usr/local/bin/entrypoint_conformance.sh --model hms --config /data/hms_config.json
 ```
 
 ### Run HEC-RAS Model
+
 ```bash
 docker run --rm -v $(pwd):/data conformance-reference /usr/local/bin/entrypoint_conformance.sh --model ras --config /data/ras_config.json
 ```
 
 ## Entrypoint
+
 The default entrypoint is:
+
 ```dockerfile
 ENTRYPOINT ["/usr/local/bin/entrypoint_conformance.sh"]
 ```
 
 ## Source Files
+
 - `Dockerfile`
 - `entrypoint_conformance.sh`
 - `run_hms.sh`

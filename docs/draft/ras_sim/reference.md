@@ -15,18 +15,23 @@ This reference implementation provides a containerized environment for running H
 ### Usage
 
 #### Run a HEC-RAS Model
+
 ```bash
 docker run --rm -v $(pwd):/sim ras-reference
 ```
+
 This will execute `/sim/run-model.sh` inside the container, running the HEC-RAS model with files in `/sim`.
 
 ### Entrypoint
+
 The default entrypoint is:
+
 ```dockerfile
 ENTRYPOINT ["/sim/run-model.sh"]
 ```
 
 ### Source Files
+
 - `Dockerfile`
 - `run-model.sh`
 - HEC-RAS binaries and libraries (downloaded during build)

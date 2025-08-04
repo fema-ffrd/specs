@@ -13,18 +13,23 @@ This reference implementation provides a containerized environment for running H
 ### Usage
 
 #### Run a HEC-HMS Model
+
 ```bash
 docker run --rm -v $(pwd):/data hms-reference /app/run_hms.sh
 ```
+
 This will execute `/app/run_hms.sh` inside the container, running the HEC-HMS model with files in `/data`.
 
 ### Entrypoint
+
 The default entrypoint is:
+
 ```dockerfile
 ENTRYPOINT ["/app/run_hms.sh"]
 ```
 
 ### Source Files
+
 - `Dockerfile`
 - `run_hms.sh`
 - `hms_schema.json`
