@@ -9,13 +9,13 @@ useful, and compatible with modern workflows.
 
 ## 📝 Specification
 
-#### 1. Re-emit `stdout`
+#### 1. Re-emit `stdout`/`stderr`
 
-Containers must re-emit messages logged to `stdout` by the main process.
+Containers must re-emit messages logged to `stdout`/`stderr` by the main process.
 
-In some cases, the container may filter or aggregate superflous logs to `stdout`.
+In some cases, the container may filter or aggregate superflous logs to `stdout`/`stderr`.
 For example, the HEC-RAS 6.x Unsteady process is extremely "chatty", indicating its progress by
-echoing each individual timestep to `stdout`. Logs from a HEC-RAS 6.x container will be more legible if messages
+echoing each individual timestep to `stdout`/`stderr`. Logs from a HEC-RAS 6.x container will be more legible if messages
 from the Unsteady process are filtered to increments of, e.g., 1%, 5%, or 10% progress.
 
 #### 2. Tail and echo relevant log files
@@ -31,7 +31,7 @@ Containers must write log messages in a format which includes:
 
 1. ISO timestamp
 1. Level (e.g., `ERROR`, `WARNING`, `INFO`)
-1. Path to the log file where the log message was written (not applicable to messages written to `stdout`)
+1. Path to the log file where the log message was written (not applicable to messages written to `stdout`/`stderr`)
 1. The original log message
 
 Example:
