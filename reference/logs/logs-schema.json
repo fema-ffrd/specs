@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/logs-schema.json",
+  "title": "FFRD Log Format",
+  "description": "Schema for the FFRD log format",
+  "version": "0.1.0",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "description": "The timestamp of the log entry",
+      "type": "string",
+      "format": "date-time"
+    },
+    "level": {
+      "description": "The log level",
+      "type": "string",
+      "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    },
+    "source": {
+      "description": "The source of the log entry; e.g., the file path to the log file. This can be null if the log entry is not associated with a specific file.",
+      "type": ["string", "null"]
+    },
+    "message": {
+      "description": "The log message",
+      "type": "string"
+    }
+  },
+  "required": [ "timestamp", "level", "source", "message" ]
+}

@@ -1,4 +1,4 @@
-FROM gradle:7.3.1-jdk17 as javabuilder
+FROM gradle:7.3.1-jdk17 AS javabuilder
 
 USER root
 RUN apt update && apt -y install wget unzip libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1
