@@ -2,7 +2,7 @@
 
 ______________________________________________________________________
 
-{% include "draft/orchestration/spec.md" %}
+{% include "draft/orchestration/technical-capabilities.md" %}
 
 ______________________________________________________________________
 

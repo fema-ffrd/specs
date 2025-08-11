@@ -2,17 +2,17 @@
 
 ### Argo Workflows Implementation
 
-This reference implementation demonstrates how Argo Workflows can satisfy the FFRD orchestration requirements. Argo Workflows is provided as one example of a compliant orchestration system, but other systems may be used as long as they meet the specification requirements.
+This reference implementation demonstrates how Argo Workflows could support FFRD orchestration needs. Argo Workflows is presented as one example of an orchestration system that offers relevant capabilities, alongside other potential solutions that could meet similar workflow requirements.
 
 #### Implementation Overview
 
-The reference implementation uses Argo Workflows running on Kubernetes to provide:
+The reference implementation uses Argo Workflows running on Kubernetes to illustrate:
 
-- DAG-based workflow execution with explicit task dependencies
-- Container execution with shared volume access
-- Parallel task execution with parameterization
-- Shared volume management for data exchange between tasks
-- Basic logging and monitoring capabilities
+- DAG-based workflow execution patterns with explicit task dependencies
+- Container execution approaches with shared volume access
+- Parallel task execution techniques with parameterization
+- Shared volume management strategies for data exchange between tasks
+- Logging and monitoring capabilities for workflow observability
 
 #### Example Workflow Structure
 
@@ -182,17 +182,3 @@ argo logs dag-example-abc123
 # View workflow status and results
 argo get dag-example-abc123
 ```
-
-#### Alternative Implementations
-
-While this reference uses Argo Workflows, other orchestration systems can satisfy FFRD requirements:
-
-- **Apache Airflow**: Python-based DAG orchestration with extensive integrations
-- **Prefect**: Modern workflow orchestration with dynamic DAG generation
-- **Kubeflow Pipelines**: ML-focused orchestration with container-native execution
-- **Temporal**: Durable execution framework with strong consistency guarantees
-- **Custom Solutions**: Purpose-built orchestration systems meeting FFRD specifications
-
-The key requirement is that any chosen system must satisfy all requirements outlined in the FFRD orchestration specification, regardless of the underlying implementation technology.
-
-This reference implementation serves as a concrete example of how to satisfy FFRD orchestration requirements.
