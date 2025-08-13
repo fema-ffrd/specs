@@ -39,6 +39,7 @@ nav:
   - Proposals:
     - proposals/conformance/conformance.md
     - proposals/orchestration/orchestration.md
+    - proposals/logging.md
 
   - Appendix:
     - references.md

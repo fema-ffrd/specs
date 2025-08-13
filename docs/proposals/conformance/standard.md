@@ -4,7 +4,7 @@
 
 ### Overview
 
-This specification describes requirements for a containerized environment to run a conformance test, which performs the followin operations:
+This specification describes requirements for a containerized environment to run a conformance test, which performs the following operations:
 
 1. Validate configuration inputs using published schemas
 1. Download required files
