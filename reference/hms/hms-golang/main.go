@@ -48,18 +48,18 @@ func logError(src, m string)  { log.Error().Str("source", src).Msg(m) }
 type cliCfg struct {
 	projectFile string
 	simName     string
-	example     string
+	example     bool
 	jsonFile    string
 	logFormat   string
 }
 
 func parseFlags() cliCfg {
 	var c cliCfg
-	flag.StringVar(&c.projectFile, "project-file",   "", ".hms project file")
-	flag.StringVar(&c.simName,     "sim-name",       "", "simulation name")
-	flag.StringVar(&c.example,     "example",        "", "built-in example (tenk)")
-	flag.StringVar(&c.jsonFile,    "json-file",      "", "JSON file with hms_schema")
-	flag.StringVar(&c.logFormat,   "log-format", "text", "text | json")
+	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
+	flag.StringVar(&c.simName,     "sim-name",     "",     "simulation name")
+	flag.BoolVar(&c.example,       "example",      false,  "built-in example (tenk)")
+	flag.StringVar(&c.jsonFile,    "json-file",    "",     "JSON file with hms_schema")
+	flag.StringVar(&c.logFormat,   "log-format",   "text", "text | json")
 	flag.Parse()
 	return c
 }
@@ -120,7 +120,7 @@ func main() {
 
 	// --- input validation -------------------------------------------------
 	gotInput := 0
-	if cfg.example != "" {
+	if cfg.example {
 		gotInput++
 	}
 	if cfg.jsonFile != "" {
@@ -139,31 +139,32 @@ func main() {
 		simName string
 	)
 
+	hmsHome := os.Getenv("HMS_HOME")
 	switch {
-	// case cfg.example == "tenk":
-	// 	hmsFile = "/app/HEC-HMS-4.12/samples/tenk/tenk.hms"
-	// 	simName = "Jan 96 storm"
+		case cfg.example:
+			hmsFile = filepath.Join(hmsHome, "samples", "tenk", "tenk.hms")
+			simName = "Jan 96 storm"
 
-	case cfg.jsonFile != "":
-		f, e := os.Open(cfg.jsonFile)
-		if e != nil {
-			logError("-", "cannot read JSON file: "+e.Error())
-			os.Exit(1)
-		}
-		var data struct {
-			Schema struct {
-				ProjectFile string `json:"project_file"`
-				SimName     string `json:"sim_name"`
-			} `json:"hms_schema"`
-		}
-		if e = json.NewDecoder(f).Decode(&data); e != nil {
-			logError("-", "invalid JSON: "+e.Error())
-			os.Exit(1)
-		}
-		hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
+		case cfg.jsonFile != "":
+			f, e := os.Open(cfg.jsonFile)
+			if e != nil {
+				logError("-", "cannot read JSON file: "+e.Error())
+				os.Exit(1)
+			}
+			var data struct {
+				Schema struct {
+					ProjectFile string `json:"project_file"`
+					SimName     string `json:"sim_name"`
+				} `json:"hms_schema"`
+			}
+			if e = json.NewDecoder(f).Decode(&data); e != nil {
+				logError("-", "invalid JSON: "+e.Error())
+				os.Exit(1)
+			}
+			hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
 
-	default:
-		hmsFile, simName = cfg.projectFile, cfg.simName
+		default:
+			hmsFile, simName = cfg.projectFile, cfg.simName
 	}
 
 	if hmsFile == "" || !strings.HasSuffix(strings.ToLower(hmsFile), ".hms") {
@@ -201,7 +202,6 @@ func main() {
 	}
 
 	// --- build Java command ----------------------------------------------
-	hmsHome := os.Getenv("HMS_HOME")
 	javaExe := filepath.Join(hmsHome, "jre", "bin", "java")
 	classpath := fmt.Sprintf("%s/*:%s/lib/*", hmsHome, hmsHome)
 
@@ -239,7 +239,7 @@ func main() {
 		for sc.Scan() {
 			line := strings.TrimSpace(sc.Text())
 			if line != "" {
-				logInfo("HMS", line)
+				classifyAndLog("hms-runner", line)
 			}
 		}
 	}(stdout)

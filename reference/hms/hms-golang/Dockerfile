@@ -26,17 +26,34 @@ RUN apt-get update \
 
 # HMS distribution (must already be extracted in build context)
 # Download and extract HEC-HMS
-ARG HEC_HMS_VERSION="4.12"
-ARG HEC_HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HEC_HMS_VERSION}-linux64/hec-hms-${HEC_HMS_VERSION}-linux64.tar.gz"
-RUN wget "${HEC_HMS_DOWNLOAD_URL}" -O hec-hms.tar.gz \
+# TODO: encountering DSS errors when attempting to run v4.13 image
+ARG HMS_VERSION="4.12"
+ARG HMS_HOME="/opt/HEC-HMS-${HMS_VERSION}"
+RUN if [ "$HMS_VERSION" = "4.13" ]; then \
+        # HEC-HMS 4.13 download URL is slightly different
+        HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HMS_VERSION}-linux64/hec-hms-${HMS_VERSION}-linux64-linux64.tar.gz"; \
+    else \
+        HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HMS_VERSION}-linux64/hec-hms-${HMS_VERSION}-linux64.tar.gz"; \
+    fi \
+    # Download & extract HMS
+    && wget "${HMS_DOWNLOAD_URL}" -O hec-hms.tar.gz \
     && tar -xvzf hec-hms.tar.gz -C /opt \
-    && rm hec-hms.tar.gz
+    && rm hec-hms.tar.gz \
+    # Ensure that Java is executable
+    && chmod +x ${HMS_HOME}/jre/bin/java \
+    # Extract samples
+    && mkdir -p ${HMS_HOME}/samples \
+    && unzip ${HMS_HOME}/samples.zip -d /tmp/samples \
+    && TMP_SAMPLES=$(dirname $(find /tmp/samples -name tenk)) \
+    && cp -r $TMP_SAMPLES/* ${HMS_HOME}/samples/ \
+    && chmod -R 777 ${HMS_HOME}/samples/ \
+    && rm -rf /tmp/samples
 
 # Runner binary
 COPY --from=builder /hms-runner /usr/local/bin/hms-runner
 
 # Environment expected by the wrapper / HMS
-ENV HMS_HOME="/opt/HEC-HMS-${HEC_HMS_VERSION}" \
+ENV HMS_HOME="${HMS_HOME}" \
     PATH=/usr/local/bin:/usr/bin:/bin
 
 # Optional: non-root execution
