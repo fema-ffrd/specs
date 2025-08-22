@@ -24,7 +24,6 @@ RUN apt-get update \
        wget unzip libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
 
-# HMS distribution (must already be extracted in build context)
 # Download and extract HEC-HMS
 # TODO: encountering DSS errors when attempting to run v4.13 image
 ARG HMS_VERSION="4.12"
