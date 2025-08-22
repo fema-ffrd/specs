@@ -3,7 +3,7 @@ name: Build and push HMS runner images
 on:
   push:
     branches:
-      - feature/build-push-hms-runner
+      - main
     paths:
       - 'reference/hms/hms-golang/**'
 
