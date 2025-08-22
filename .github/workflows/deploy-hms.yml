@@ -44,5 +44,6 @@ jobs:
       - name: Tag latest
         if: ${{ matrix.hms_version == env.LATEST_HMS_VERSION }}
         run: |
+          docker pull $IMAGE:${{ matrix.hms_version }}
           docker tag $IMAGE:${{ matrix.hms_version }} $IMAGE:latest
           docker push $IMAGE:latest
