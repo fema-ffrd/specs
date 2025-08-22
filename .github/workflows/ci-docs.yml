@@ -1,12 +1,12 @@
-name: Deploy MkDocs to GitHub Pages
+name: Test Build - Docs
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  deploy:
+  test-build-docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +26,6 @@ jobs:
         run: |
           mdformat --check .
 
-      - name: Build and deploy
+      - name: Check build
         run: |
-          pip install ghp-import
           mkdocs build
-          ghp-import -n -p -f site
-

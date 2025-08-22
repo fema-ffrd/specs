@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -39,8 +40,10 @@ func configureLogger(format string) {
 		Level(zerolog.InfoLevel)
 } 
 
-func logInfo(src,  m string)   { log.Info().Str("source", src).Msg(m) }
-func logWarn(src,  m string)   { log.Warn().Str("source", src).Msg(m) }
+const hmsRunner = "hms-runner"
+
+func logInfo(src, m string)   { log.Info().Str("source", src).Msg(m) }
+func logWarn(src, m string)   { log.Warn().Str("source", src).Msg(m) }
 func logError(src, m string)  { log.Error().Str("source", src).Msg(m) }
 
 /* ---------- CLI flags ---------------------------------------------------- */
@@ -98,17 +101,23 @@ func classifyAndLog(source, line string) {
 	}
 }
 
-func tailFile(ctx context.Context, path string) {
+/* ---------- tailing files with WaitGroup ------------------------------- */
+
+func tailFile(ctx context.Context, path string, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	cmd := exec.CommandContext(ctx, "tail", "-n", "0", "-F", path)
 	stdout, _ := cmd.StdoutPipe()
 	if err := cmd.Start(); err != nil {
 		logError(path, "tail failed: "+err.Error())
 		return
 	}
+
 	sc := bufio.NewScanner(stdout)
 	for sc.Scan() {
 		classifyAndLog(path, strings.TrimSpace(sc.Text()))
 	}
+
 	_ = cmd.Wait()
 }
 
@@ -130,7 +139,7 @@ func main() {
 		gotInput++
 	}
 	if gotInput != 1 {
-		logError("-", "Specify exactly one of --example, --json-file, or --project-file/--sim-name")
+		logError(hmsRunner, "Specify exactly one of --example, --json-file, or --project-file/--sim-name")
 		os.Exit(1)
 	}
 
@@ -141,38 +150,38 @@ func main() {
 
 	hmsHome := os.Getenv("HMS_HOME")
 	switch {
-		case cfg.example:
-			hmsFile = filepath.Join(hmsHome, "samples", "tenk", "tenk.hms")
-			simName = "Jan 96 storm"
+	case cfg.example:
+		hmsFile = filepath.Join(hmsHome, "samples", "tenk", "tenk.hms")
+		simName = "Jan 96 storm"
 
-		case cfg.jsonFile != "":
-			f, e := os.Open(cfg.jsonFile)
-			if e != nil {
-				logError("-", "cannot read JSON file: "+e.Error())
-				os.Exit(1)
-			}
-			var data struct {
-				Schema struct {
-					ProjectFile string `json:"project_file"`
-					SimName     string `json:"sim_name"`
-				} `json:"hms_schema"`
-			}
-			if e = json.NewDecoder(f).Decode(&data); e != nil {
-				logError("-", "invalid JSON: "+e.Error())
-				os.Exit(1)
-			}
-			hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
+	case cfg.jsonFile != "":
+		f, e := os.Open(cfg.jsonFile)
+		if e != nil {
+			logError(hmsRunner, "cannot read JSON file: "+e.Error())
+			os.Exit(1)
+		}
+		var data struct {
+			Schema struct {
+				ProjectFile string `json:"project_file"`
+				SimName     string `json:"sim_name"`
+			} `json:"hms_schema"`
+		}
+		if e = json.NewDecoder(f).Decode(&data); e != nil {
+			logError(hmsRunner, "invalid JSON: "+e.Error())
+			os.Exit(1)
+		}
+		hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
 
-		default:
-			hmsFile, simName = cfg.projectFile, cfg.simName
+	default:
+		hmsFile, simName = cfg.projectFile, cfg.simName
 	}
 
 	if hmsFile == "" || !strings.HasSuffix(strings.ToLower(hmsFile), ".hms") {
-		logError("-", "project_file must be a .hms file")
+		logError(hmsRunner, "project_file must be a .hms file")
 		os.Exit(1)
 	}
 	if simName == "" {
-		logError("-", "sim_name is required")
+		logError(hmsRunner, "sim_name is required")
 		os.Exit(1)
 	}
 
@@ -182,22 +191,22 @@ func main() {
 	// --- build Jython script ---------------------------------------------
 	scriptPath, e := buildJython(projectName, projectDir, simName)
 	if e != nil {
-		logError("-", "cannot write temp script: "+e.Error())
+		logError(hmsRunner, "cannot write temp script: "+e.Error())
 		os.Exit(1)
 	}
 	defer os.Remove(scriptPath)
 
-	// --- discover & start tailers ----------------------------------------
+	// --- discover & start tailers with WaitGroup ------------------------
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	if files, _ := filepath.Glob(filepath.Join(projectDir, "*.log")); files != nil {
+
+	var wg sync.WaitGroup
+
+	for _, pattern := range []string{"*.log", "*.out"} {
+		files, _ := filepath.Glob(filepath.Join(projectDir, pattern))
 		for _, p := range files {
-			go tailFile(ctx, p)
-		}
-	}
-	if files, _ := filepath.Glob(filepath.Join(projectDir, "*.out")); files != nil {
-		for _, p := range files {
-			go tailFile(ctx, p)
+			wg.Add(1)
+			go tailFile(ctx, p, &wg)
 		}
 	}
 
@@ -229,29 +238,35 @@ func main() {
 	cmd.Stderr = cmd.Stdout // merge
 
 	if e = cmd.Start(); e != nil {
-		logError("-", "cannot start HMS: "+e.Error())
+		logError(hmsRunner, "cannot start HMS: "+e.Error())
 		os.Exit(1)
 	}
 
-	// --- stream HMS output -----------------------------------------------
+	// --- stream HMS stdout/stderr ---------------------------------------
 	go func(r io.Reader) {
 		sc := bufio.NewScanner(r)
 		for sc.Scan() {
 			line := strings.TrimSpace(sc.Text())
 			if line != "" {
-				classifyAndLog("hms-runner", line)
+				classifyAndLog("hms-stdout-stderr", line)
 			}
 		}
 	}(stdout)
 
 	if e = cmd.Wait(); e != nil {
 		if exitErr, ok := e.(*exec.ExitError); ok {
-			logError("-", fmt.Sprintf("HMS exited with code %d", exitErr.ExitCode()))
+			logError(hmsRunner, fmt.Sprintf("HMS exited with code %d", exitErr.ExitCode()))
 			os.Exit(exitErr.ExitCode())
 		}
-		logError("-", e.Error())
+		logError(hmsRunner, e.Error())
 		os.Exit(1)
 	}
 
-	logInfo("-", fmt.Sprintf("Simulation '%s' completed successfully for project '%s'.", simName, projectName))
+	// --- give tailers a moment to catch remaining writes -----------------
+	time.Sleep(1 * time.Second)
+	cancel() // signal tailers to stop
+	wg.Wait() // wait for tailers to finish
+
+	logInfo(hmsRunner, fmt.Sprintf("Simulation '%s' completed for project '%s'.", simName, projectName))
 }
+
