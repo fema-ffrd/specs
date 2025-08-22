@@ -1,4 +1,4 @@
-name: MkDocs Build Check
+name: Build Check
 
 on:
   pull_request:
@@ -30,3 +30,20 @@ jobs:
         run: |
           mkdocs build
 
+  test-build-hms-runner:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build HMS Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./reference/hms/hms-golang
+          file: ./reference/hms/hms-golang/Dockerfile
+          push: false
+          tags: hms-runner:latest
