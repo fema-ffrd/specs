@@ -4,17 +4,19 @@ RUN yum -y update && \
     yum -y install unzip && \
     yum -y install jq
 
-RUN wget https://www.hec.usace.army.mil/software/hec-ras/downloads/HEC-RAS_610_Linux.zip
+RUN wget https://www.hec.usace.army.mil/software/hec-ras/downloads/Linux_RAS_v66.zip
 
-RUN unzip HEC-RAS_610_Linux.zip
-RUN unzip HEC-RAS_610_Linux/RAS_Linux_test_setup.zip
+RUN unzip Linux_RAS_v66.zip
+# RUN unzip Linux_RAS_v66/Linux_RAS_v66.zip
 
 FROM registry.access.redhat.com/ubi8/ubi:8.5 AS prod
 RUN yum -y install jq
-COPY --from=build /RAS_Linux_test_setup/libs /ras/libs
-COPY --from=build /RAS_Linux_test_setup/Ras_v61/Release /ras/v61
 
-RUN chmod +x ras/v61/*
+COPY --from=build /Linux_RAS_v66/ /ras
+
+
+RUN chmod +x -R ras/*
+
 
 RUN mkdir /sim
 WORKDIR /sim
