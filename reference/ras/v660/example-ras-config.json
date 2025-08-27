@@ -1,6 +1,6 @@
 {
   "ras_schema": {
-    "model_directory": "/data",
-    "model_name": "Muncie"
+    "model_directory": "/data/Muncie_US",
+    "model_name": "Muncie_US"
   }
 }

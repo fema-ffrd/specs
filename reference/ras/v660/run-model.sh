@@ -19,6 +19,6 @@ export PATH=$RAS_EXE_PATH:$PATH
 echo $MODELDIR
 
 cd $MODELDIR
-RasUnsteady $MODEL.p04.tmp.hdf x04
+RasUnsteady $MODEL.p07
 
-mv $MODEL.p04.tmp.hdf $MODEL.p04.hdf
+#mv $MODEL.p04.tmp.hdf $MODEL.p04.hdf
