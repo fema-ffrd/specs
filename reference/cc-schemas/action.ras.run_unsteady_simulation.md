@@ -19,10 +19,10 @@
     - <a id="properties/inputs/properties/data_sources/contains"></a>**Contains** *(object)*
       - <a id="properties/inputs/properties/data_sources/contains/properties/name"></a>**`name`**: Must match pattern: `.*\.tmp\.hdf$` ([Test](https://regexr.com/?expression=.%2A%5C.tmp%5C.hdf%24)).
       - <a id="properties/inputs/properties/data_sources/contains/properties/paths"></a>**`paths`** *(object, required)*: Can contain additional properties.
-        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/b_file"></a>**`b_file`** *(string, required)*
-        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/o_file"></a>**`o_file`** *(string, required)*
-        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/tmp_hdf"></a>**`tmp_hdf`** *(string, required)*
-        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/x_file"></a>**`x_file`** *(string, required)*
+        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/b_file"></a>**`b_file`** *(string, required)*: Path to the HEC-RAS boundary condition file (.b##).
+        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/o_file"></a>**`o_file`** *(string, required)*: Path to HEC-RAS file (.o##).
+        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/tmp_hdf"></a>**`tmp_hdf`** *(string, required)*: Path to the HEC-RAS temporary HDF file (.tmp.hdf) used for the unsteady simulation.
+        - <a id="properties/inputs/properties/data_sources/contains/properties/paths/properties/x_file"></a>**`x_file`** *(string, required)*: Path to the HEC-RAS file (.x##).
 
     Examples:
     ```json
