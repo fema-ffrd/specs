@@ -103,16 +103,20 @@
                     "type": "object",
                     "properties": {
                       "b_file": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Path to the HEC-RAS boundary condition file (.b##)."
                       },
                       "o_file": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Path to HEC-RAS file (.o##)."
                       },
                       "tmp_hdf": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Path to the HEC-RAS temporary HDF file (.tmp.hdf) used for the unsteady simulation."
                       },
                       "x_file": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Path to the HEC-RAS file (.x##)."
                       }
                     },
                     "required": [
