@@ -31,7 +31,7 @@ export PATH=$RAS_EXE_PATH:$PATH
 
 cd "$MODELDIR"
 
-set -o pipefail
+# set -o pipefail
 if RasUnsteady "${MODEL}.p${INDEX_PADDED}.tmp.hdf" "x${INDEX_PADDED}" 2>&1 | tee /dev/stderr | grep -q "Finished Unsteady Flow Simulation"; then
     sleep 2
     mv "${MODEL}.p${INDEX_PADDED}.tmp.hdf" "${MODEL}.p${INDEX_PADDED}.hdf"
