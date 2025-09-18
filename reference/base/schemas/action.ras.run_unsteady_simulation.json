@@ -48,6 +48,10 @@
             "scenario": {
               "type": "string",
               "description": "Scenario name or folder (e.g. 'conformance')."
+            },
+            "CC_EVENT_IDENTIFIER": {
+              "type": "string",
+              "description": "Alternate / placeholder for testing ENV vars."
             }
           },
           "required": [
@@ -73,7 +77,9 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "enum": ["ras_model_files"]
+                    "enum": [
+                      "ras_model_files"
+                    ]
                   },
                   "paths": {
                     "type": "object",

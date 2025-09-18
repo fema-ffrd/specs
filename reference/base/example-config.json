@@ -1,4 +1,3 @@
-
 {
   "name": "run-unsteady-lavon-plan01",
   "type": "ras.run_unsteady_simulation",
@@ -10,7 +9,8 @@
     "base-hydraulics-directory": "hydraulics",
     "base-system-response-directory": "system-response",
     "outputdir": "outputs",
-    "scenario": "conformance"
+    "scenario": "conformance",
+    "CC_EVENT_IDENTIFIER": "test-event"
   },
   "inputs": [
     {
@@ -18,7 +18,7 @@
       "paths": {
         "b_file": "conformance/hydraulics/lavon/lavon.b01",
         "o_file": "conformance/hydraulics/lavon/lavon.ic.o01",
-        "tmp_hdf": "conformance/outputs/event-data/{ENV::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.tmp.hdf",
+        "tmp_hdf": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.tmp.hdf",
         "x_file": "conformance/hydraulics/lavon/lavon.x01"
       },
       "store_name": "FFRD"
@@ -26,7 +26,7 @@
     {
       "name": "failure_elevations.json",
       "paths": {
-        "failure_elevations": "conformance/outputs/event-data/{ENV::CC_EVENT_IDENTIFIER}/system-response/failure_elevations.json"
+        "failure_elevations": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/system-response/failure_elevations.json"
       },
       "store_name": "FFRD"
     }
@@ -35,14 +35,14 @@
     {
       "name": "hdf_output",
       "paths": {
-        "hdf_output": "conformance/outputs/event-data/{ENV::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.hdf"
+        "hdf_output": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.hdf"
       },
       "store_name": "FFRD"
     },
     {
       "name": "rasoutput_log",
       "paths": {
-        "rasoutput_log": "conformance/outputs/event-data/{ENV::CC_EVENT_IDENTIFIER}/hydraulics/lavon/rasoutput.log"
+        "rasoutput_log": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/rasoutput.log"
       },
       "store_name": "FFRD"
     }
