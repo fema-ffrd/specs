@@ -2,9 +2,10 @@ FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
-COPY base_schema.json /schemas/base_schema.json
+COPY ./schemas /schemas
 
-RUN pip install boto3 python-dotenv jsonschema referencing>=0.30.0
+RUN pip install boto3 python-dotenv
+RUN pip install --no-cache-dir jsonschema>=4.23.0
 
 # Download from S3
 COPY download.py /usr/local/bin/download

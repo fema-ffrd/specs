@@ -1,0 +1,58 @@
+{
+  "$id": "./store.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Store": {
+      "title": "Store",
+      "description": "Connection details for an external storage location (e.g., S3, Local File Server).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "store_type", "profile", "params"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-friendly handle for the store.",
+          "examples": ["FFRD"]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Stable identifier for the store."
+        },
+        "store_type": {
+          "type": "string",
+          "enum": ["S3", "LOCAL"],
+          "description": "Type of storage."
+        },
+        "profile": {
+          "type": "string",
+          "description": "Credential/profile identifier used to access the store.",
+          "examples": ["account-1"]
+        },
+        "params": {
+          "type": "object",
+          "description": "Store-specific parameters.",
+          "additionalProperties": true,
+          "required": ["root"],
+          "properties": {
+            "root": {
+              "type": "string",
+              "description": "Root path/prefix within the store. For S3, this is a bucket name and optional prefix; for Local, this is a (posix) directory path.",
+              "examples": ["model-library/ffrd-trinity"]
+            }
+          }
+        }
+      },
+      "examples": [
+        {
+          "name": "FFRD",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "store_type": "S3",
+          "profile": "account-1",
+          "params": { "root": "model-library/ffrd-trinity" }
+        }
+      ]
+    }
+  },
+  "$ref": "#/$defs/Store"
+}

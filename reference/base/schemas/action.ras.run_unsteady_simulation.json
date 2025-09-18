@@ -1,0 +1,162 @@
+{
+  "$id": "./action.ras.run_unsteady_simulation.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "unsteady-simulation",
+  "description": "Schema for an unsteady HEC-RAS simulation action. Combines action metadata, attribute substitutions, input data sources, outputs, and store configuration.",
+  "allOf": [
+    {
+      "$ref": "./action.json#/$defs/Action"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "description": "Primitive attributes used for template substitution in path strings (accessible via {ATTR::...}).",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "properties": {
+            "geom": {
+              "type": "string",
+              "description": "Geometry identifier suffix (e.g. '01')."
+            },
+            "plan": {
+              "type": "string",
+              "description": "Plan identifier (e.g. '01')."
+            },
+            "modelPrefix": {
+              "type": "string",
+              "description": "Model prefix used in file names (e.g. 'lavon')."
+            },
+            "base-hydraulics-directory": {
+              "type": "string",
+              "description": "Base directory for hydraulics files."
+            },
+            "base-system-response-directory": {
+              "type": "string",
+              "description": "Base directory for system-response outputs."
+            },
+            "outputdir": {
+              "type": "string",
+              "description": "Top-level output directory name."
+            },
+            "scenario": {
+              "type": "string",
+              "description": "Scenario name or folder (e.g. 'conformance')."
+            }
+          },
+          "required": [
+            "geom",
+            "plan",
+            "modelPrefix",
+            "base-hydraulics-directory",
+            "base-system-response-directory",
+            "outputdir",
+            "scenario"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "description": "Input data sources required for the unsteady simulation.",
+          "items": {
+            "$ref": "./data.json#/$defs/DataSource"
+          },
+          "minItems": 2,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "enum": ["ras_model_files"]
+                  },
+                  "paths": {
+                    "type": "object",
+                    "properties": {
+                      "b_file": {
+                        "type": "string",
+                        "description": "Path to the HEC-RAS boundary condition file (.b##)."
+                      },
+                      "o_file": {
+                        "type": "string",
+                        "description": "Path to HEC-RAS file (.o##)."
+                      },
+                      "tmp_hdf": {
+                        "type": "string",
+                        "description": "Path to the HEC-RAS temporary HDF file (.tmp.hdf) used for the unsteady simulation."
+                      },
+                      "x_file": {
+                        "type": "string",
+                        "description": "Path to the HEC-RAS file (.x##)."
+                      }
+                    },
+                    "required": [
+                      "b_file",
+                      "o_file",
+                      "tmp_hdf",
+                      "x_file"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "paths"
+                ]
+              },
+              "minContains": 1
+            }
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "description": "Output data sources produced by the unsteady simulation.",
+          "items": {
+            "$ref": "./data.json#/$defs/DataSource"
+          },
+          "minItems": 2,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "const": "hdf_output"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "const": "rasoutput_log"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "minContains": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs",
+        "store"
+      ]
+    }
+  ]
+}
