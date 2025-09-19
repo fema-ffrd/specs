@@ -50,43 +50,39 @@ def load_schemas(schema_dir=None):
 
 def validate_instance(schema, instance, schemas=None):
     """Validate instance against schema using the latest jsonschema library"""
-    try:
-        if schemas:
-            # Create a simple custom resolver
-            from referencing import Registry, Resource
+    all_errors = []
 
-            # Create resources from all schemas
-            resources = []
-            for schema_id, schema_def in schemas.items():
-                try:
-                    # Create resource with proper specification detection
-                    resource = Resource.from_contents(schema_def)
-                    resources.append((schema_id, resource))
-                except Exception as e:
-                    print(f"Warning: Could not create resource for {schema_id}: {e}")
+    if schemas:
+        # Create a simple custom resolver
+        from referencing import Registry, Resource
 
-            # Create registry
-            registry = Registry().with_resources(resources)
+        # Create resources from all schemas
+        resources = []
+        for schema_id, schema_def in schemas.items():
+            try:
+                # Create resource with proper specification detection
+                resource = Resource.from_contents(schema_def)
+                resources.append((schema_id, resource))
+            except Exception as e:
+                print(f"Warning: Could not create resource for {schema_id}: {e}")
 
-            # Validate with registry
-            jsonschema.validate(instance, schema, registry=registry)
-        else:
-            # Simple validation without cross-references
-            jsonschema.validate(instance, schema)
+        # Create registry
+        registry = Registry().with_resources(resources)
 
+        # Validate with registry and collect all errors
+        validator = jsonschema.Draft202012Validator(schema, registry=registry)
+        errors = validator.iter_errors(instance)
+        all_errors.extend(errors)
+    else:
+        # Simple validation without cross-references
+        validator = jsonschema.Draft202012Validator(schema)
+        errors = validator.iter_errors(instance)
+        all_errors.extend(errors)
+
+    if all_errors:
+        return False, all_errors
+    else:
         return True, []
-
-    except ValidationError as e:
-        return False, [e]
-    except Exception as e:
-        # Fall back to simple validation if registry fails
-        try:
-            jsonschema.validate(instance, schema)
-            return True, []
-        except ValidationError as ve:
-            return False, [ve]
-        except Exception as ee:
-            return False, [f"Validation error: {ee}"]
 
 
 def print_validation_errors(errors):

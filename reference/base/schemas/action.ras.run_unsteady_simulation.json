@@ -59,9 +59,7 @@
             "plan",
             "modelPrefix",
             "base-hydraulics-directory",
-            "base-system-response-directory",
-            "outputdir",
-            "scenario"
+            "outputdir"
           ]
         },
         "inputs": {
@@ -70,7 +68,7 @@
           "items": {
             "$ref": "./data.json#/$defs/DataSource"
           },
-          "minItems": 2,
+          "minItems": 1,
           "allOf": [
             {
               "contains": {
@@ -112,7 +110,8 @@
                 },
                 "required": [
                   "name",
-                  "paths"
+                  "paths",
+                  "store_name"
                 ]
               },
               "minContains": 1
@@ -150,7 +149,9 @@
                   }
                 },
                 "required": [
-                  "name"
+                  "name",
+                  "paths",
+                  "store_name"
                 ]
               },
               "minContains": 1
