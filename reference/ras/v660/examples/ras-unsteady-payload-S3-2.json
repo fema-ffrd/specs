@@ -5,7 +5,7 @@
     "geom": "01",
     "plan": "01",
     "modelPrefix": "lavon",
-    "base-hydraulics-directory": "data",
+    "base-hydraulics-directory": "hydraulics",
     "outputdir": "outputs"
   },
   "inputs": [
@@ -24,23 +24,25 @@
     {
       "name": "hdf_output",
       "paths": {
-        "hdf_output": "stac/ras/{ATTR:outputdir}/{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
+        "hdf_output": "stac/ras/{ATTR:modelPrefix}/{ATTR:outputdir}/{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
       },
-      "store_name": "stac-demo"
-    },
-    {
-      "name": "rasoutput_log",
-      "paths": {
-        "rasoutput_log": "stac/ras/{ATTR:modelPrefix}/{ATTR:outputs}/rasoutput.log"
-      },
-      "store_name": "stac-demo"
+      "store_name": "local-mount"
     }
   ],
-  "store": {
-    "name": "stac-demo",
-    "store_type": "S3",
-    "params": {
-      "root": "trinity-pilot"
+  "stores": [
+    {
+      "name": "stac-demo",
+      "store_type": "S3",
+      "params": {
+        "root": "trinity-pilot"
+      }
+    },
+    {
+      "name": "local-mount",
+      "store_type": "FS",
+      "params": {
+        "root": "/data"
+      }
     }
-  }
+  ]
 }

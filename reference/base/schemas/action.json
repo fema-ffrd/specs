@@ -51,9 +51,12 @@
           },
           "description": "One or more outputs."
         },
-        "store": {
-          "$ref": "./store.json#/$defs/Store",
-          "description": "Storage configuration for this action."
+        "stores": {
+          "type": "array",
+          "items": {
+            "$ref": "./store.json#/$defs/Store"
+          },
+          "description": "List of storage configurations for this action."
         }
       }
     }

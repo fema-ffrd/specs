@@ -8,12 +8,15 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+
 JSON_PAYLOAD="$1"
+RUN_SCRIPT=./run_unsteady.py
+SCHEMA="action.ras.run_unsteady_simulation.json"
 
 echo "🔍 Running schema validation..."
-if ! python3 "$VALIDATE" "$JSON_PAYLOAD"; then
+if ! python3 "$VALIDATE" -s "$SCHEMA" -i "$JSON_PAYLOAD"; then
   echo "❌ Validation failed. Aborting."
   exit 1
 fi
 
-python3 ./run_model.py $JSON_PAYLOAD
+python3 $RUN_SCRIPT $JSON_PAYLOAD

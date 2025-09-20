@@ -1,0 +1,41 @@
+{
+  "name": "run-unsteady-lavon-plan01",
+  "type": "ras.run_unsteady_simulation",
+  "attributes": {
+    "geom": "01",
+    "plan": "01",
+    "modelPrefix": "lavon",
+    "base-hydraulics-directory": "data",
+    "outputdir": "outputs"
+  },
+  "inputs": [
+    {
+      "name": "ras_model_files",
+      "paths": {
+        "b_file": "{ATTR:modelPrefix}.b{ATTR:geom}",
+        "o_file": "{ATTR:modelPrefix}.ic.o{ATTR:plan}",
+        "tmp_hdf": "{ATTR:modelPrefix}.p{ATTR:plan}.tmp.hdf",
+        "x_file": "{ATTR:modelPrefix}.x{ATTR:plan}"
+      },
+      "store_name": "local-mount"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "hdf_output",
+      "paths": {
+        "hdf_output": "{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
+      },
+      "store_name": "local-mount"
+    }
+  ],
+  "stores": [
+    {
+      "name": "local-mount",
+      "store_type": "FS",
+      "params": {
+        "root": "trinity-pilot"
+      }
+    }
+  ]
+}
