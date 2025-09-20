@@ -4,16 +4,26 @@ This page includes the complete configuration schema used by the base image to v
 
 It is provided as a reference for plugin authors and base image reimplementers.
 
-### 🔍 JSON Schema
+### 🔍 JSON Schemas
+
+{% include "draft/base_image/action.md" %}
 
 ```json
-{% include "../../../reference/base/base_schema.json" %}
+{% include "../../../reference/base/schemas/action.json" %}
 ```
 
-### 🧾 Notes
+{% include "draft/base_image/data.md" %}
 
-- The schema is based on [JSON Schema Draft 7](https://json-schema.org/draft-07/schema)
-- This file defines the required structure for `--config` passed to the container
-- Extensions can be added in `schema-extension.json` and merged during image build
+```json
+{% include "../../../reference/base/schemas/data.json" %}
+```
+
+
+{% include "draft/base_image/store.md" %}
+
+```json
+{% include "../../../reference/base/schemas/store.json" %}
+```
+### 🧾 Notes
 
 For more information on schema extensions, see the Base Image Specification.

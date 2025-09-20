@@ -23,8 +23,7 @@ This specification describes requirements for a containerized environment to run
 
 #### 4. Execution
 
-- Provide a shell script (`run-model.sh`) to automate model execution.
-- Set the container entrypoint to `/sim/run-model.sh`.
+TBD
 
 #### 5. Dependencies
 
@@ -33,8 +32,4 @@ This specification describes requirements for a containerized environment to run
 
 ### Example Usage
 
-```bash
-docker run --rm -v $(pwd):/sim ras-reference
-```
-
-This command runs the model using files mounted in `/sim`.
+TBD
