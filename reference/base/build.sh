@@ -1,9 +1,11 @@
 IMAGE=ffrd_base
 docker build -t $IMAGE .
 
+# Test with validation example
 docker run --rm \
   $IMAGE \
-  "$(cat example-config.json)"
+  -s "action.json" \
+  -i "$(cat example-config.json)"
 
 # docker run --rm \
 #   --env-file .env \

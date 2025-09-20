@@ -2,13 +2,15 @@
 Delete a group (and its contents) from an HDF5 file.
 
 Example:
-  python3 delete_hdf5_group.py /path/to/file.hdf5 --group results --backup --yes
+  python3 delete_hdf5_group.py /path/to/file.hdf5 --group results
 """
+
 import argparse
 import os
 import sys
 
 import h5py
+
 
 def main():
     p = argparse.ArgumentParser(description="Delete an HDF5 group (recursively).")
@@ -36,6 +38,7 @@ def main():
     except Exception as e:
         print(f"Error modifying HDF5 file: {e}", file=sys.stderr)
         sys.exit(4)
+
 
 if __name__ == "__main__":
     main()
