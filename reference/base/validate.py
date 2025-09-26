@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 JSON Schema Validator for RAS simulation schemas
-Supports JSON Schema Draft 2020-12 with latest jsonschema librarys
+Supports JSON Schema Draft 2020-12 with latest jsonschema libraries
 """
 
 import argparse

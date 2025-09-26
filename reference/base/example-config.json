@@ -1,60 +1,40 @@
 {
   "name": "run-unsteady-lavon-plan01",
   "type": "ras.run_unsteady_simulation",
-  "description": "Run HEC-RAS unsteady simulation for Lavon plan 01.",
   "attributes": {
     "geom": "01",
     "plan": "01",
     "modelPrefix": "lavon",
     "base-hydraulics-directory": "hydraulics",
-    "base-system-response-directory": "system-response",
-    "outputdir": "outputs",
-    "scenario": "conformance",
-    "CC_EVENT_IDENTIFIER": "test-event"
+    "outputdir": "outputs"
   },
   "inputs": [
     {
       "name": "ras_model_files",
       "paths": {
-        "b_file": "conformance/hydraulics/lavon/lavon.b01",
-        "o_file": "conformance/hydraulics/lavon/lavon.ic.o01",
-        "tmp_hdf": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.tmp.hdf",
-        "x_file": "conformance/hydraulics/lavon/lavon.x01"
+        "b_file": "stac/ras/{ATTR:modelPrefix}.b{ATTR:geom}",
+        "o_file": "stac/ras/{ATTR:modelPrefix}.ic.o{ATTR:plan}",
+        "tmp_hdf": "stac/ras/{ATTR:modelPrefix}.p{ATTR:plan}.tmp.hdf",
+        "x_file": "stac/ras/{ATTR:modelPrefix}.x{ATTR:plan}"
       },
-      "store_name": "FFRD"
-    },
-    {
-      "name": "failure_elevations.json",
-      "paths": {
-        "failure_elevations": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/system-response/failure_elevations.json"
-      },
-      "store_name": "FFRD"
+      "store_name": "stac-demo"
     }
   ],
   "outputs": [
     {
       "name": "hdf_output",
       "paths": {
-        "hdf_output": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/lavon.p01.hdf"
+        "hdf_output": "stac/ras/{ATTR:modelPrefix}/{ATTR:outputdir}/{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
       },
-      "store_name": "FFRD"
-    },
-    {
-      "name": "rasoutput_log",
-      "paths": {
-        "rasoutput_log": "conformance/outputs/event-data/{ATTR::CC_EVENT_IDENTIFIER}/hydraulics/lavon/rasoutput.log"
-      },
-      "store_name": "FFRD"
+      "store_name": "stac-demo"
     }
   ],
   "stores": [
     {
-      "name": "FFRD",
-      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "name": "stac-demo",
       "store_type": "S3",
-      "profile": "FFRD",
       "params": {
-        "root": "model-library/ffrd-trinity"
+        "root": "trinity-pilot"
       }
     }
   ]

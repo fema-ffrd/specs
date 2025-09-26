@@ -19,6 +19,10 @@ RUN chmod +x /usr/local/bin/upload
 COPY validate.py /usr/local/bin/validate
 RUN chmod +x /usr/local/bin/validate
 
+# Parse and Resolve Config(s)
+COPY parse.py /usr/local/bin/resolve-config
+RUN chmod +x /usr/local/bin/resolve-config
+
 # Validate and Download files
 COPY download_from_config.py /usr/local/bin/download_from_config
 RUN chmod +x /usr/local/bin/download_from_config
