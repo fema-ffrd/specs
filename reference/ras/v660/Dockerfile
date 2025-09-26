@@ -7,7 +7,7 @@ RUN wget https://www.hec.usace.army.mil/software/hec-ras/downloads/Linux_RAS_v66
 RUN unzip Linux_RAS_v66.zip
 
 # USE ffrd_base:latest AS ffrd_base for testing and development
-FROM ffrd_base:latest AS ffrd_base
+FROM ffrd_base AS ffrd_base
 
 COPY --from=build /Linux_RAS_v66/ /ras
 RUN chmod +x -R /ras/*
@@ -16,7 +16,6 @@ RUN mkdir /sim
 WORKDIR /sim
 
 COPY ./schemas/action.ras.run_unsteady_simulation.json /schemas
-COPY ./parsers/unsteady_simulation_config.py .
 COPY ./run_unsteady.py .
 
 COPY entrypoint.sh .

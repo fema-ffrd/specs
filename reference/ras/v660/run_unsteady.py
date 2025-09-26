@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
-import sys
-import os
 import json
+import os
 import subprocess
+import sys
 import time
 from pathlib import Path
-from dataclasses import fields
-
-# For local testing outside of Docker
-try:
-    from parsers.unsteady_simulation_config import Config
-except ImportError:
-    from unsteady_simulation_config import Config
 
 DOWNLOAD = "/usr/local/bin/download"
 UPLOAD = "/usr/local/bin/upload"
+RESOLVE = "/usr/local/bin/resolve-config"
+
 LOCAL_DIR = "/mnt"
-LOCAL_OUTPUT_DIR = f"{LOCAL_DIR}/output"
+LOCAL_OUTPUT_DIR = f"/{LOCAL_DIR}/output"
 
 
 def setup_environment():
@@ -39,12 +34,12 @@ def process_s3_files(action, files, store_root, paths, command, local_tmp_hdf=No
         action (str): Action being performed ("download" or "upload").
         files (list): List of file types to process.
         store_root (str): Base S3 path or local directory.
-        paths (object): Paths object containing file paths.
+        paths (dict): Dictionary containing file paths.
         command (str): Command to execute (DOWNLOAD or UPLOAD).
     """
     try:
         for file_type in files:
-            file_path = getattr(paths, file_type)
+            file_path = paths.get(file_type)
             if not file_path:
                 continue  # Skip if the file path is None
 
@@ -63,86 +58,70 @@ def process_s3_files(action, files, store_root, paths, command, local_tmp_hdf=No
 
 def download_s3_input(cfg, input_names: list):
     """
-    Download input files from S3 based on the provided Config and input name.
+    Download input files from S3 based on the provided configuration and input name.
 
     Args:
-        cfg (Config): The configuration object.
-        input_name (str): The name of the input to download.
+        cfg (dict): The resolved configuration dictionary.
+        input_names (list): List of input names to download.
     """
     for input_name in input_names:
-        files = cfg.get_input_by_name(input_name)
+        files = get_input_by_name(cfg, input_name)
         if not files:
             print(f"❌ Input '{input_name}' not found in the configuration.")
             return None
 
-        file_types = [field.name for field in fields(files.paths) if getattr(files.paths, field.name)]
+        file_types = [key for key, value in files["paths"].items() if value]
 
-        process_s3_files("download", file_types, files.store_root, files.paths, DOWNLOAD)
+        process_s3_files("download", file_types, files["store_root"], files["paths"], DOWNLOAD)
     return True
 
 
-# def upload_s3_output(cfg, output_names: list, local_source: str):
-#     """
-#     Upload output files to S3 based on the provided Config and output name.
+def create_local_output_paths(paths_dict: dict, local_root: str, local_prefix: str = None) -> dict:
+    """
+    Create local output paths based on the given local source directory.
 
-#     Args:
-#         cfg (Config): The configuration object.
-#         output_names (list): The names of the outputs to upload.
-#         local_source (str): The base directory for local output paths.
-#     """
-#     for output_name in output_names:
-#         # Retrieve the Output object by name
-#         output = cfg.get_output_by_name(output_name)
-#         if not output:
-#             print(f"❌ Output '{output_name}' not found in the configuration.")
-#             return None
+    Args:
+        paths_dict (dict): Dictionary containing file paths.
+        local_root (str): The base directory for local output paths.
+        local_prefix (str, optional): Optional prefix for local paths.
 
-#         # Generate local paths for the output files
-#         local_paths = output.create_local_output_paths(local_source)
-
-#         # Get the file types dynamically from the OutputPaths object
-#         file_types = [field.name for field in fields(output.paths) if getattr(output.paths, field.name)]
-
-#         # Process the files for upload
-#         try:
-#             for file_type in file_types:
-#                 local_path = local_paths[file_type]
-#                 if not local_path or not os.path.exists(local_path):
-#                     print(f"❌ Local file not found: {local_path}")
-#                     return False
-#                 s3_path = f"s3://{output.store_root}/{getattr(output.paths, file_type)}"
-#                 subprocess.call([UPLOAD, s3_path, "--path", local_path])
-
-#         except Exception as e:
-#             print(f"❌ Error uploading files for output '{output_name}': {e}")
-#             return False
-
-#     return True
+    Returns:
+        dict: A dictionary mapping output file types to their local paths.
+    """
+    local_paths = {}
+    for field_name, file_path in paths_dict.items():
+        if file_path and local_prefix:
+            file_name = Path(file_path).name
+            local_paths[field_name] = f"{local_root}/{local_prefix}/{file_name}"
+        elif file_path:
+            file_name = Path(file_path).name
+            local_paths[field_name] = f"{local_root}/{file_name}"
+    return local_paths
 
 
 def process_output_files(cfg, output_names: list, local_source: str, action: str, destination_dir: str = None):
     """
-    Process output files based on the provided Config and action.
+    Process output files based on the provided configuration and action.
 
     Args:
-        cfg (Config): The configuration object.
+        cfg (dict): The resolved configuration dictionary.
         output_names (list): The names of the outputs to process.
         local_source (str): The base directory for local output paths.
         action (str): The action to perform ("upload" or "copy").
         destination_dir (str, optional): The destination directory for copying files (required for "copy").
     """
     for output_name in output_names:
-        # Retrieve the Output object by name
-        output = cfg.get_output_by_name(output_name)
+        # Retrieve the output by name
+        output = get_output_by_name(cfg, output_name)
         if not output:
             print(f"❌ Output '{output_name}' not found in the configuration.")
             return False
 
         # Generate local paths for the output files
-        local_paths = output.create_local_output_paths(local_source)
+        local_paths = create_local_output_paths(output["paths"], str(local_source))
 
-        # Get the file types dynamically from the OutputPaths object
-        file_types = [field.name for field in fields(output.paths) if getattr(output.paths, field.name)]
+        # Get the file types dynamically from the paths dictionary
+        file_types = [key for key, value in output["paths"].items() if value]
 
         # Process the files based on the action
         try:
@@ -153,7 +132,7 @@ def process_output_files(cfg, output_names: list, local_source: str, action: str
                     return False
 
                 if action == "upload":
-                    s3_path = f"s3://{output.store_root}/{getattr(output.paths, file_type)}"
+                    s3_path = f"s3://{output['store_root']}/{output['paths'][file_type]}"
                     subprocess.call([UPLOAD, s3_path, "--path", local_path])
                     print(f"✅ Uploaded {file_type} to {s3_path}")
                 elif action == "copy" and destination_dir:
@@ -173,18 +152,16 @@ def verify_local_files(file_object):
     Verify that all required local files exist.
 
     Args:
-        file_object: An Input or Output object containing paths to verify.
+        file_object: A dictionary containing file paths to verify.
 
     Returns:
         bool: True if all files exist, False otherwise.
     """
     try:
-        # Dynamically get the paths object (InputPaths or OutputPaths)
-        paths = file_object.paths
+        # Get the paths dictionary
+        paths = file_object["paths"]
         required_files = [
-            f"{LOCAL_DIR}/{getattr(paths, field.name)}"
-            for field in fields(paths)
-            if getattr(paths, field.name)  # Only include non-None paths
+            f"{LOCAL_DIR}/{file_path}" for file_path in paths.values() if file_path  # Only include non-None paths
         ]
 
         for file in required_files:
@@ -199,30 +176,50 @@ def verify_local_files(file_object):
         return False
 
 
+def get_input_by_name(cfg, input_name):
+    """Get input by name from the resolved configuration."""
+    for input_item in cfg.get("inputs", []):
+        if input_item.get("name") == input_name:
+            return input_item
+    return None
+
+
+def get_output_by_name(cfg, output_name):
+    """Get output by name from the resolved configuration."""
+    for output_item in cfg.get("outputs", []):
+        if output_item.get("name") == output_name:
+            return output_item
+    return None
+
+
 def main(cfg):
     """Main function to run RasUnsteady."""
     env, ras_exe_path = setup_environment()
 
-    model_files = cfg.get_input_by_name("ras_model_files")
-    local_tmp_hdf = f"{LOCAL_DIR}/{model_files.paths.tmp_hdf}"
+    model_files = get_input_by_name(cfg, "ras_model_files")
+    if not model_files:
+        print("❌ Error: 'ras_model_files' input not found in configuration.")
+        return 1
+
+    local_tmp_hdf = f"{LOCAL_DIR}/{model_files['paths']['tmp_hdf']}"
     local_root = Path(local_tmp_hdf).parent
 
-    attrs = cfg.attributes
+    attrs = cfg["attributes"]
 
-    # # Process inputs
-    inputs = [input.name for input in cfg.inputs]
+    # Process inputs
+    inputs = [input_item["name"] for input_item in cfg.get("inputs", [])]
     for input_name in inputs:
-        files = cfg.get_input_by_name(input_name)
+        files = get_input_by_name(cfg, input_name)
         if not files:
             print(f"❌ Error: Input '{input_name}' not found.")
             return 1
 
-        if files.store_type == "S3":
+        if files["store_type"] == "S3":
             files_verified = download_s3_input(cfg, [input_name])
-        elif files.store_type == "FS":
+        elif files["store_type"] == "FS":
             files_verified = verify_local_files(files)
         else:
-            print(f"❌ Unsupported store type: {files.store_type}")
+            print(f"❌ Unsupported store type: {files['store_type']}")
             return 1
 
         if not files_verified:
@@ -231,7 +228,7 @@ def main(cfg):
 
     # Run RasUnsteady
     success_phrase = "Finished Unsteady Flow Simulation"
-    cmd = [f"{ras_exe_path}/RasUnsteady", local_tmp_hdf, f"x{attrs.geom}"]
+    cmd = [f"{ras_exe_path}/RasUnsteady", local_tmp_hdf, f"x{attrs['geom']}"]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env, text=True, bufsize=1)
     found_success = False
 
@@ -253,23 +250,23 @@ def main(cfg):
         return 2
 
     # Process outputs
-    outputs = [output.name for output in cfg.outputs]
+    outputs = [output_item["name"] for output_item in cfg.get("outputs", [])]
     subprocess.call(["cp", local_tmp_hdf, local_tmp_hdf.replace(".tmp.hdf", ".hdf")])
     for output_name in outputs:
-        output = cfg.get_output_by_name(output_name)
+        output = get_output_by_name(cfg, output_name)
         if not output:
             print(f"❌ Error: Output '{output_name}' not found.")
             return 1
 
-        if output.store_type == "S3":
+        if output["store_type"] == "S3":
             files_verified = process_output_files(cfg, [output_name], local_source=local_root, action="upload")
-        elif output.store_type == "FS":
+        elif output["store_type"] == "FS":
             destination_dir = LOCAL_OUTPUT_DIR
             files_verified = process_output_files(
                 cfg, [output_name], local_source=local_root, action="copy", destination_dir=destination_dir
             )
         else:
-            print(f"❌ Unsupported store type: {output.store_type}")
+            print(f"❌ Unsupported store type: {output['store_type']}")
             return 1
 
         if not files_verified:
@@ -281,7 +278,22 @@ def main(cfg):
 
 
 if __name__ == "__main__":
-    cfg = json.loads("".join(sys.argv[1:]))
-    config = Config(**cfg)
-    exit_code = main(config)
+    # Get the JSON configuration from command line arguments
+    config_json = "".join(sys.argv[1:])
+
+    # Use the resolve-config binary to parse and resolve the configuration
+    try:
+        result = subprocess.run([RESOLVE, config_json], capture_output=True, text=True, check=True)
+        resolved_config = json.loads(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Configuration resolution failed: {e.stderr}", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"❌ Failed to parse resolved configuration: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error during configuration resolution: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    exit_code = main(resolved_config)
     sys.exit(exit_code)

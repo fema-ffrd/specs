@@ -41,7 +41,7 @@
       "name": "local-mount",
       "store_type": "FS",
       "params": {
-        "root": "/data"
+        "root": "data"
       }
     }
   ]

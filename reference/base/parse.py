@@ -388,28 +388,28 @@ class Config:
 
 def main():
     """
-    Main function to parse and resolve configuration files from command line.
+    Main function to parse and resolve configuration JSON from command line.
     """
     parser = argparse.ArgumentParser(
-        description="Parse and resolve configuration files with ATTR: and ENV: substitutions",
+        description="Parse and resolve configuration JSON with ATTR: and ENV: substitutions",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Resolve config from JSON file
-  python parser.py config.json
-
   # Resolve config from JSON string 
-  python parser.py '{"name": "test", "type": "sim", "attributes": {...}, ...}'
+  resolve-config '{"name": "test", "type": "sim", "attributes": {...}, ...}'
 
   # Pretty print the resolved JSON
-  python parser.py config.json --pretty
+  resolve-config '{"name": "test", ...}' --pretty
 
   # Show verbose output
-  python parser.py config.json --verbose
+  resolve-config '{"name": "test", ...}' --verbose
+
+  # Use with command substitution (common usage)
+  resolve-config "$(cat config.json)" --pretty
         """,
     )
 
-    parser.add_argument("config", help="Configuration file path or JSON string to parse and resolve")
+    parser.add_argument("config", help="Configuration JSON string to parse and resolve")
 
     parser.add_argument("--pretty", "-p", action="store_true", help="Pretty print the resolved JSON output")
 
@@ -417,33 +417,15 @@ Examples:
 
     args = parser.parse_args()
 
-    # Load configuration data
-    config_data = None
+    # Parse configuration from JSON string
+    if args.verbose:
+        print("Parsing configuration from JSON string", file=sys.stderr)
 
-    if Path(args.config).exists():
-        # Load from file
-        if args.verbose:
-            print(f"Loading configuration from file: {args.config}", file=sys.stderr)
-
-        try:
-            with open(args.config, "r") as f:
-                config_data = json.load(f)
-        except json.JSONDecodeError as e:
-            print(f"Error: Invalid JSON in file {args.config}: {e}", file=sys.stderr)
-            sys.exit(1)
-        except IOError as e:
-            print(f"Error: Cannot read file {args.config}: {e}", file=sys.stderr)
-            sys.exit(1)
-    else:
-        # Parse as JSON string
-        if args.verbose:
-            print("Parsing configuration from JSON string", file=sys.stderr)
-
-        try:
-            config_data = json.loads(args.config)
-        except json.JSONDecodeError as e:
-            print(f"Error: Invalid JSON string: {e}", file=sys.stderr)
-            sys.exit(1)
+    try:
+        config_data = json.loads(args.config)
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON string: {e}", file=sys.stderr)
+        sys.exit(1)
 
     # Create Config object
     if args.verbose:
