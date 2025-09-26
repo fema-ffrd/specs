@@ -21,7 +21,7 @@ This reference implementation provides a containerized environment for running H
 docker run --platform linux/amd64 --rm -v ./data:/mnt $IMAGE "$(cat examples/ras-unsteady-payload-FS.json)"
 ```
 
-This assumes the required model data is mounted at /data locally (relative to the Dockerfile),  running the HEC-RAS model with files described in the `ras-unsteady-payload-FS.json` example. Please note properties will need to be updated.
+This assumes the required model data is mounted at /data locally (relative to the Dockerfile), running the HEC-RAS model with files described in the `ras-unsteady-payload-FS.json` example. Please note properties will need to be updated.
 
 ### Entrypoint
 

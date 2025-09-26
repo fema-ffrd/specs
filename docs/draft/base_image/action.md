@@ -13,13 +13,12 @@ This schema extends or references the following base schemas:
 
 ### Properties
 
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| name | string | Logical name for this action (e.g., step name in a workflow). | Yes |
-| type | string | Action type identifier (tool/operator name). In future versions may be an enum supporting named types such as `link`, `utils`, `extract`, and `run` | Yes |
-| description | string | Human-readable summary of the action. | No |
-| attributes | object | Primitive attributes used for template substitution in path strings. | Yes |
-| inputs | array | One or more inputs. | No |
-| outputs | array | One or more outputs. | No |
-| stores | array | List of storage configurations for this action. | No |
-
+| Property    | Type   | Description                                                                                                                                         | Required |
+| ----------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| name        | string | Logical name for this action (e.g., step name in a workflow).                                                                                       | Yes      |
+| type        | string | Action type identifier (tool/operator name). In future versions may be an enum supporting named types such as `link`, `utils`, `extract`, and `run` | Yes      |
+| description | string | Human-readable summary of the action.                                                                                                               | No       |
+| attributes  | object | Primitive attributes used for template substitution in path strings.                                                                                | Yes      |
+| inputs      | array  | One or more inputs.                                                                                                                                 | No       |
+| outputs     | array  | One or more outputs.                                                                                                                                | No       |
+| stores      | array  | List of storage configurations for this action.                                                                                                     | No       |

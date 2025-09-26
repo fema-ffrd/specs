@@ -8,9 +8,9 @@ Named path templates used by inputs/outputs. May include a 'default' path. Place
 
 ### Properties
 
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| default | string | Default/fallback path template. | No |
+| Property | Type   | Description                     | Required |
+| -------- | ------ | ------------------------------- | -------- |
+| default  | string | Default/fallback path template. | No       |
 
 #### Property Examples
 
@@ -35,15 +35,14 @@ Mapping of domain keys to selectors/locations inside files (e.g., DSS pathname o
 
 ### Properties
 
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| name | string | Logical input name. | Yes |
-| paths | object | Named path templates for locating input files/objects. | Yes |
-| data_paths | object | Map of domain keys to in-file selectors (optional unless required by the specific action). | No |
-| store | object | Inline store config for this data source. | No |
-| store_name | string | Reference to a named top-level store in the action. | No |
+| Property   | Type   | Description                                                                                | Required |
+| ---------- | ------ | ------------------------------------------------------------------------------------------ | -------- |
+| name       | string | Logical input name.                                                                        | Yes      |
+| paths      | object | Named path templates for locating input files/objects.                                     | Yes      |
+| data_paths | object | Map of domain keys to in-file selectors (optional unless required by the specific action). | No       |
+| store      | object | Inline store config for this data source.                                                  | No       |
+| store_name | string | Reference to a named top-level store in the action.                                        | No       |
 
 #### Property Examples
 
 - **name**: `source`
-

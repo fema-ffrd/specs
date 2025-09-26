@@ -18,12 +18,12 @@ It is provided as a reference for plugin authors and base image reimplementers.
 {% include "../../../reference/base/schemas/data.json" %}
 ```
 
-
 {% include "draft/base_image/store.md" %}
 
 ```json
 {% include "../../../reference/base/schemas/store.json" %}
 ```
+
 ### 🧾 Notes
 
 For more information on schema extensions, see the Base Image Specification.
