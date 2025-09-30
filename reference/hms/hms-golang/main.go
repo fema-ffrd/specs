@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -49,20 +50,22 @@ func logError(src, m string)  { log.Error().Str("source", src).Msg(m) }
 /* ---------- CLI flags ---------------------------------------------------- */
 
 type cliCfg struct {
-	projectFile string
-	simName     string
-	example     bool
-	jsonFile    string
-	logFormat   string
+	projectFile  string
+	simName      string
+	excessPrecip string
+	jsonFile     string
+	example      bool
+	logFormat    string
 }
 
 func parseFlags() cliCfg {
 	var c cliCfg
-	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
-	flag.StringVar(&c.simName,     "sim-name",     "",     "simulation name")
-	flag.BoolVar(&c.example,       "example",      false,  "built-in example (tenk)")
-	flag.StringVar(&c.jsonFile,    "json-file",    "",     "JSON file with hms_schema")
-	flag.StringVar(&c.logFormat,   "log-format",   "text", "text | json")
+	flag.StringVar(&c.projectFile,  "project-file",  "",     ".hms project file")
+	flag.StringVar(&c.simName,      "sim-name",      "",     "simulation name")
+	flag.StringVar(&c.excessPrecip, "excess-precip", "",     "path to export spatial excess precip as RAS .p##.tmp.hdf file or .dss file")
+	flag.StringVar(&c.jsonFile,     "json-file",     "",     "configure HMS run with a JSON file based on the FFRD HMS schema")
+	flag.BoolVar(&c.example,        "example",       false,  "run built-in example (tenk)")
+	flag.StringVar(&c.logFormat,    "log-format",    "text", "text | json")
 	flag.Parse()
 	return c
 }
@@ -70,17 +73,44 @@ func parseFlags() cliCfg {
 /* ---------- helpers ------------------------------------------------------ */
 
 const jythonTpl = `from hms.model.JythonHms import *
-OpenProject("%s", "%s")
-ComputeRun("%s")
-SaveAllProjectComponents()
+from hms.model import Project
+from hms.model.data import SpatialVariableType
+
+from time import time
+
+project_name = "%s"
+project_dir = "%s"
+sim_name = "%s"
+excess_precip = "%s"
+
+def _print(msg):
+	print("Jython: " + str(msg))
+
+# Open project, compute sim, save
+project_path = project_dir + "/" + project_name + ".hms"
+_print("opening project: " + project_path)
+project = Project.open(project_path)
+project.computeRun(sim_name)
+_print("finished compute.")
+project.saveAll()
+_print("finished save.")
+
+# Export excess precip if requested
+if excess_precip:
+	_print("exporting spatial excess precip to: " + excess_precip)
+	spec = project.getComputeSpecification(sim_name)
+	t1 = time()
+	spec.exportSpatialResults(excess_precip, { SpatialVariableType.INC_EXCESS })
+	t2 = time()
+	_print("finished spatial excess precip export in " + str(t2 - t1) + " seconds.")
 `
 
-func buildJython(projectName, projectDir, simName string) (string, error) {
+func buildJython(projectName, projectDir, simName string, excessPrecip string) (string, error) {
 	tmp, err := os.CreateTemp("", "*.script")
 	if err != nil {
 		return "", err
 	}
-	code := fmt.Sprintf(jythonTpl, projectName, projectDir, simName)
+	code := fmt.Sprintf(jythonTpl, projectName, projectDir, simName, excessPrecip)
 	if _, err = tmp.WriteString(code); err != nil {
 		return "", err
 	}
@@ -93,6 +123,8 @@ func classifyAndLog(source, line string) {
 	case strings.Contains(line, "WARNING"):
 		logWarn(source, line)
 	case strings.Contains(line, "ERROR"):
+		logError(source, line)
+	case strings.Contains(line, "SEVERE"):
 		logError(source, line)
 	case strings.Contains(line, "NOTE"):
 		logInfo(source, line)
@@ -144,8 +176,9 @@ func main() {
 	}
 
 	var (
-		hmsFile string
-		simName string
+		hmsFile      string
+		simName      string
+		excessPrecip string
 	)
 
 	hmsHome := os.Getenv("HMS_HOME")
@@ -160,20 +193,20 @@ func main() {
 			logError(hmsRunner, "cannot read JSON file: "+e.Error())
 			os.Exit(1)
 		}
-		var data struct {
-			Schema struct {
-				ProjectFile string `json:"project_file"`
-				SimName     string `json:"sim_name"`
-			} `json:"hms_schema"`
+		type Schema struct {
+			ProjectFile  string `json:"project_file"`
+			SimName      string `json:"sim_name"`
+			ExcessPrecip string `json:"excess_precip,omitempty"`
 		}
-		if e = json.NewDecoder(f).Decode(&data); e != nil {
+		var s Schema
+		if e = json.NewDecoder(f).Decode(&s); e != nil {
 			logError(hmsRunner, "invalid JSON: "+e.Error())
 			os.Exit(1)
 		}
-		hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
+		hmsFile, simName, excessPrecip = s.ProjectFile, s.SimName, s.ExcessPrecip
 
 	default:
-		hmsFile, simName = cfg.projectFile, cfg.simName
+		hmsFile, simName, excessPrecip = cfg.projectFile, cfg.simName, cfg.excessPrecip
 	}
 
 	if hmsFile == "" || !strings.HasSuffix(strings.ToLower(hmsFile), ".hms") {
@@ -184,12 +217,19 @@ func main() {
 		logError(hmsRunner, "sim_name is required")
 		os.Exit(1)
 	}
+	rasHdfRe := regexp.MustCompile(`.*\.p[0-9][0-9]\.(hdf|tmp\.hdf)$`)
+	if !rasHdfRe.MatchString(excessPrecip) &&
+		!strings.HasSuffix(strings.ToLower(excessPrecip), ".dss") &&
+		excessPrecip != "" {
+		logError(hmsRunner, "excess_precip must be a .p##.tmp.hdf file or .dss file")
+		os.Exit(1)
+	}
 
 	projectDir := filepath.Dir(hmsFile)
 	projectName := strings.TrimSuffix(filepath.Base(hmsFile), filepath.Ext(hmsFile))
 
 	// --- build Jython script ---------------------------------------------
-	scriptPath, e := buildJython(projectName, projectDir, simName)
+	scriptPath, e := buildJython(projectName, projectDir, simName, excessPrecip)
 	if e != nil {
 		logError(hmsRunner, "cannot write temp script: "+e.Error())
 		os.Exit(1)

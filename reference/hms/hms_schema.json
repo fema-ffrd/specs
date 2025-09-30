@@ -6,19 +6,19 @@
   "description": "Configuration for running a HEC-HMS model using a project file.",
   "type": "object",
   "properties": {
-    "program": {
-      "type": "string",
-      "enum": [
-        "hms"
-      ]
-    },
     "project_file": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "Path to the HEC-HMS project file (.hms)."
     },
     "sim_name": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "Name of the simulation within the HEC-HMS project to run."
+    },
+    "excess_precip": {
+      "type": "string",
+      "description": "Optional path to export spatial excess precipitation results (RAS HDF or DSS format)."
     }
   },
   "required": [
