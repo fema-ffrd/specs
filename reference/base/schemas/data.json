@@ -30,7 +30,12 @@
       "title": "DataPaths",
       "description": "Mapping of domain keys to selectors/locations inside files (e.g., DSS pathname or HDF internal path).",
       "additionalProperties": {
-        "type": ["string", "number", "boolean", "array"]
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "array"
+        ]
       },
       "examples": [
         {
@@ -42,12 +47,17 @@
     "DataSource": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "paths"],
+      "required": [
+        "name",
+        "paths"
+      ],
       "properties": {
         "name": {
           "type": "string",
           "description": "Logical input name.",
-          "examples": ["source"]
+          "examples": [
+            "source"
+          ]
         },
         "paths": {
           "$ref": "#/$defs/Paths",
@@ -67,8 +77,16 @@
         }
       },
       "oneOf": [
-        { "required": ["store"] },
-        { "required": ["store_name"] }
+        {
+          "required": [
+            "store"
+          ]
+        },
+        {
+          "required": [
+            "store_name"
+          ]
+        }
       ]
     }
   }

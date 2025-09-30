@@ -23,57 +23,57 @@
           "properties": {
             "control-name": {
               "type": "string",
-              "description": ".."
+              "description": "Name of the control file used in the simulation."
             },
             "basin-name": {
               "type": "string",
-              "description": ".."
+              "description": "Name of the basin file used in the simulation."
             },
             "met-name": {
               "type": "string",
-              "description": "...."
+              "description": "Name of the meteorological file used in the simulation."
             },
             "model-name": {
               "type": "string",
-              "description": "Model prefix used in file names (e.g. 'lavon')."
+              "description": "Model prefix used in file names (e.g., 'trinity')."
             },
             "base-hydrology-directory": {
               "type": "string",
-              "description": "Base directory for hydraulics files."
+              "description": "Base directory for hydrology simulation and model files."
             },
             "outputdir": {
               "type": "string",
-              "description": "Top-level output directory name."
+              "description": "Top-level directory where output files will be stored."
             },
             "simulation": {
               "type": "string",
-              "description": "...."
+              "description": "Name of the simulation being executed."
             },
             "exported-precip-name": {
               "type": "string",
-              "description": "...."
+              "description": "Name of the exported precipitation hdf file."
             },
             "storm-name": {
               "type": "string",
-              "description": "...."
+              "description": "Name of the storm event used in the simulation."
             },
             "exported-peak-paths": {
               "type": "array",
-              "description": "Paths for exported peak data.",
+              "description": "Paths to files containing exported peak data.",
               "items": {
                 "type": "string"
               }
             },
             "exported-peak-durations": {
               "type": "array",
-              "description": "Durations for exported peak data.",
+              "description": "Durations associated with exported peak data.",
               "items": {
                 "type": "number"
               }
             },
             "CC_EVENT_IDENTIFIER": {
               "type": "string",
-              "description": "Alternate / placeholder for testing ENV vars."
+              "description": "Identifier for cloud compute event ID / placeholder for unique ID."
             }
           },
           "required": [
@@ -109,50 +109,51 @@
                       "storm-catalog",
                       "basinfiles",
                       "controlfiles"
-                    ]
+                    ],
+                    "description": "Type of input data source (e.g., HMS project files, storm data, etc.)."
                   },
                   "paths": {
                     "type": "object",
                     "properties": {
                       "control-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the control file."
                       },
                       "hms-project-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the HMS project file."
                       },
                       "run-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the run configuration file."
                       },
                       "sqlite-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the SQLite database file."
                       },
                       "terrain-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the terrain file."
                       },
                       "basin-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the basin file."
                       },
                       "met-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the meteorological file."
                       },
                       "simulation-dss": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the DSS file for simulation results."
                       },
                       "grid-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the grid file."
                       },
                       "paired-data-file": {
                         "type": "string",
-                        "description": "...."
+                        "description": "Path to the paired data file."
                       }
                     },
                     "required": [
@@ -182,7 +183,7 @@
         },
         "outputs": {
           "type": "array",
-          "description": "Output data sources produced by the unsteady simulation.",
+          "description": "Output data sources produced by the hydrologic simulation.",
           "items": {
             "$ref": "./data.json#/$defs/DataSource"
           },
@@ -198,26 +199,27 @@
                       "excess-precip",
                       "peaks",
                       "logs"
-                    ]
+                    ],
+                    "description": "Type of output data source (e.g., simulation DSS file, logs, etc.)."
                   },
                   "paths": {
                     "type": "object",
                     "properties": {
                       "simulation-dss": {
                         "type": "string",
-                        "description": "..."
+                        "description": "Path to the simulation DSS file."
                       },
                       "excess-precip": {
                         "type": "string",
-                        "description": "..."
+                        "description": "Path to the excess precipitation file."
                       },
                       "peaks": {
                         "type": "string",
-                        "description": "..."
+                        "description": "Path to the peaks data file."
                       },
                       "logs": {
                         "type": "string",
-                        "description": "..."
+                        "description": "Path to the log files."
                       }
                     },
                     "required": [],
