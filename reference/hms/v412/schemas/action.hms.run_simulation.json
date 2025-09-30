@@ -1,0 +1,245 @@
+{
+  "$id": "./action.hms.run_simulation.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "hms-simulation",
+  "description": "Schema for an HEC-HMS simulation action. Combines action metadata, attribute substitutions, input data sources, outputs, and store configuration.",
+  "allOf": [
+    {
+      "$ref": "./action.json#/$defs/Action"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "description": "Primitive attributes used for template substitution in path strings (accessible via {ATTR::...}).",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "properties": {
+            "control-name": {
+              "type": "string",
+              "description": ".."
+            },
+            "basin-name": {
+              "type": "string",
+              "description": ".."
+            },
+            "met-name": {
+              "type": "string",
+              "description": "...."
+            },
+            "model-name": {
+              "type": "string",
+              "description": "Model prefix used in file names (e.g. 'lavon')."
+            },
+            "base-hydrology-directory": {
+              "type": "string",
+              "description": "Base directory for hydraulics files."
+            },
+            "outputdir": {
+              "type": "string",
+              "description": "Top-level output directory name."
+            },
+            "simulation": {
+              "type": "string",
+              "description": "...."
+            },
+            "exported-precip-name": {
+              "type": "string",
+              "description": "...."
+            },
+            "storm-name": {
+              "type": "string",
+              "description": "...."
+            },
+            "exported-peak-paths": {
+              "type": "array",
+              "description": "Paths for exported peak data.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exported-peak-durations": {
+              "type": "array",
+              "description": "Durations for exported peak data.",
+              "items": {
+                "type": "number"
+              }
+            },
+            "CC_EVENT_IDENTIFIER": {
+              "type": "string",
+              "description": "Alternate / placeholder for testing ENV vars."
+            }
+          },
+          "required": [
+            "outputdir",
+            "base-hydrology-directory",
+            "model-name",
+            "simulation",
+            "met-name",
+            "control-name",
+            "basin-name",
+            "exported-precip-name",
+            "exported-peak-paths",
+            "exported-peak-durations"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "description": "Input data sources required for the unsteady simulation.",
+          "items": {
+            "$ref": "./data.json#/$defs/DataSource"
+          },
+          "minItems": 1,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "hms",
+                      "hms-data",
+                      "storms",
+                      "storm-catalog",
+                      "basinfiles",
+                      "controlfiles"
+                    ]
+                  },
+                  "paths": {
+                    "type": "object",
+                    "properties": {
+                      "control-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "hms-project-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "run-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "sqlite-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "terrain-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "basin-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "met-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "simulation-dss": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "grid-file": {
+                        "type": "string",
+                        "description": "...."
+                      },
+                      "paired-data-file": {
+                        "type": "string",
+                        "description": "...."
+                      }
+                    },
+                    "required": [
+                      "control-file",
+                      "hms-project-file",
+                      "run-file",
+                      "sqlite-file",
+                      "terrain-file",
+                      "basin-file",
+                      "met-file",
+                      "simulation-dss",
+                      "grid-file",
+                      "paired-data-file"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "paths",
+                  "store_name"
+                ]
+              },
+              "minContains": 1
+            }
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "description": "Output data sources produced by the unsteady simulation.",
+          "items": {
+            "$ref": "./data.json#/$defs/DataSource"
+          },
+          "minItems": 1,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "simulation-dss",
+                      "excess-precip",
+                      "peaks",
+                      "logs"
+                    ]
+                  },
+                  "paths": {
+                    "type": "object",
+                    "properties": {
+                      "simulation-dss": {
+                        "type": "string",
+                        "description": "..."
+                      },
+                      "excess-precip": {
+                        "type": "string",
+                        "description": "..."
+                      },
+                      "peaks": {
+                        "type": "string",
+                        "description": "..."
+                      },
+                      "logs": {
+                        "type": "string",
+                        "description": "..."
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "paths",
+                  "store_name"
+                ]
+              },
+              "minContains": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs",
+        "stores"
+      ]
+    }
+  ]
+}
