@@ -12,10 +12,10 @@
     {
       "name": "ras_model_files",
       "paths": {
-        "b_file": "{ATTR:modelPrefix}.b{ATTR:geom}",
-        "o_file": "{ATTR:modelPrefix}.ic.o{ATTR:plan}",
-        "tmp_hdf": "{ATTR:modelPrefix}.p{ATTR:plan}.tmp.hdf",
-        "x_file": "{ATTR:modelPrefix}.x{ATTR:plan}"
+        "b_file": "{ATTR::modelPrefix}.b{ATTR::geom}",
+        "o_file": "{ATTR::modelPrefix}.ic.o{ATTR::plan}",
+        "tmp_hdf": "{ATTR::modelPrefix}.p{ATTR::plan}.tmp.hdf",
+        "x_file": "{ATTR::modelPrefix}.x{ATTR::plan}"
       },
       "store_name": "local-mount"
     }
@@ -24,7 +24,7 @@
     {
       "name": "hdf_output",
       "paths": {
-        "hdf_output": "{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
+        "hdf_output": "{ATTR::modelPrefix}.p{ATTR::plan}.hdf"
       },
       "store_name": "local-mount"
     }

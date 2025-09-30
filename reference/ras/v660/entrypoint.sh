@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 VALIDATE=/usr/local/bin/validate
+RESOLVE=/usr/local/bin/resolve-config
 
 # Require JSON config as first argument and validate it using /usr/bin/validate only
 if [ $# -lt 1 ]; then
@@ -18,5 +19,8 @@ if ! python3 "$VALIDATE" -s "$SCHEMA" -i "$JSON_PAYLOAD"; then
   echo "❌ Validation failed. Aborting."
   exit 1
 fi
+
+# RESOLVED_CONFIG=$($RESOLVE --verbose "$JSON_PAYLOAD")
+# echo $RESOLVED_CONFIG
 
 python3 $RUN_SCRIPT $JSON_PAYLOAD

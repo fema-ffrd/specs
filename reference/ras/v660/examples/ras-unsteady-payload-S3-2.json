@@ -12,10 +12,10 @@
     {
       "name": "ras_model_files",
       "paths": {
-        "b_file": "stac/ras/{ATTR:modelPrefix}.b{ATTR:geom}",
-        "o_file": "stac/ras/{ATTR:modelPrefix}.ic.o{ATTR:plan}",
-        "tmp_hdf": "stac/ras/{ATTR:modelPrefix}.p{ATTR:plan}.tmp.hdf",
-        "x_file": "stac/ras/{ATTR:modelPrefix}.x{ATTR:plan}"
+        "b_file": "stac/ras/{ATTR::modelPrefix}.b{ATTR::geom}",
+        "o_file": "stac/ras/{ATTR::modelPrefix}.ic.o{ATTR::plan}",
+        "tmp_hdf": "stac/ras/{ATTR::modelPrefix}.p{ATTR::plan}.tmp.hdf",
+        "x_file": "stac/ras/{ATTR::modelPrefix}.x{ATTR::plan}"
       },
       "store_name": "stac-demo"
     }
@@ -24,7 +24,7 @@
     {
       "name": "hdf_output",
       "paths": {
-        "hdf_output": "stac/ras/{ATTR:modelPrefix}/{ATTR:outputdir}/{ATTR:modelPrefix}.p{ATTR:plan}.hdf"
+        "hdf_output": "stac/ras/{ATTR::modelPrefix}/{ATTR::outputdir}/{ATTR::modelPrefix}.p{ATTR::plan}.hdf"
       },
       "store_name": "local-mount"
     }

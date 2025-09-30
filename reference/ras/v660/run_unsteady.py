@@ -295,5 +295,8 @@ if __name__ == "__main__":
         print(f"❌ Unexpected error during configuration resolution: {e}", file=sys.stderr)
         sys.exit(1)
 
+    # print("✅ Configuration resolved successfully.")
+    # print(json.dumps(resolved_config, indent=2))
+
     exit_code = main(resolved_config)
     sys.exit(exit_code)
