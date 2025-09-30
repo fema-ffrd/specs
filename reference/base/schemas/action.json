@@ -32,7 +32,8 @@
             "type": [
               "string",
               "number",
-              "boolean"
+              "boolean",
+              "array"
             ]
           }
         },

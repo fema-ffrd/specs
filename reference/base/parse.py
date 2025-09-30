@@ -14,22 +14,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-def convert_keys_to_snake_case(data: dict) -> dict:
-    """Recursively convert dictionary keys from hyphen-case to snake_case."""
-    if not isinstance(data, dict):
-        return data
-    new_data = {}
-    for key, value in data.items():
-        new_key = key.replace("-", "_")
-        if isinstance(value, dict):
-            new_data[new_key] = convert_keys_to_snake_case(value)
-        elif isinstance(value, list):
-            new_data[new_key] = [convert_keys_to_snake_case(item) for item in value]
-        else:
-            new_data[new_key] = value
-    return new_data
-
-
 @dataclass
 class GenericPaths:
     """Generic paths container that can hold any path fields."""
@@ -75,7 +59,7 @@ class Input:
 
     def __post_init__(self):
         if isinstance(self.paths, dict):
-            self.paths = GenericPaths(**convert_keys_to_snake_case(self.paths))
+            self.paths = GenericPaths(**self.paths)
 
 
 @dataclass
@@ -88,7 +72,7 @@ class Output:
 
     def __post_init__(self):
         if isinstance(self.paths, dict):
-            self.paths = GenericPaths(**convert_keys_to_snake_case(self.paths))
+            self.paths = GenericPaths(**self.paths)
 
     def create_local_output_paths(self, local_root: str, local_prefix: str = None) -> dict:
         """
@@ -124,7 +108,7 @@ class Store:
 
     def __post_init__(self):
         if isinstance(self.params, dict):
-            self.params = StoreParams(**convert_keys_to_snake_case(self.params))
+            self.params = StoreParams(**self.params)
 
 
 @dataclass
@@ -176,20 +160,18 @@ class Config:
     stores: List[Store]
 
     def __post_init__(self):
-        # Convert keys in all nested dictionaries to snake_case
+        # Use attributes as-is without converting keys
         if isinstance(self.attributes, dict):
-            self.attributes = GenericAttributes(**convert_keys_to_snake_case(self.attributes))
+            self.attributes = GenericAttributes(**self.attributes)
         elif not isinstance(self.attributes, GenericAttributes):
-            # Handle case where attributes might be passed as an object with __dict__
             self.attributes = GenericAttributes(
-                **convert_keys_to_snake_case(self.attributes.__dict__ if hasattr(self.attributes, "__dict__") else {})
+                **(self.attributes.__dict__ if hasattr(self.attributes, "__dict__") else {})
             )
-        self.stores = [
-            Store(**convert_keys_to_snake_case(store_item)) if isinstance(store_item, dict) else store_item
-            for store_item in self.stores
-        ]
 
-        # Initialize inputs and outputs
+        # Initialize stores, inputs, and outputs without converting keys
+        self.stores = [
+            Store(**store_item) if isinstance(store_item, dict) else store_item for store_item in self.stores
+        ]
         self.inputs = [self._initialize_item(input_item, Input) for input_item in self.inputs]
         self.outputs = [self._initialize_item(output_item, Output) for output_item in self.outputs]
 
@@ -199,7 +181,6 @@ class Config:
     def _initialize_item(self, item, item_class):
         """Generic initializer for Input and Output objects."""
         if isinstance(item, dict):
-            item = convert_keys_to_snake_case(item)
             store_name = item.get("store_name")
             store_root = None
             store_type = None
@@ -224,14 +205,29 @@ class Config:
         return item
 
     def substitute_attributes(self):
-        """Substitute {ATTR:<name>} placeholders in inputs and outputs with values from attributes."""
+        """Substitute {ATTR:<name>} and {ATTR::<name>} placeholders in inputs and outputs with values from attributes."""
         attr_dict = self.attributes.__dict__
 
         def substitute_placeholders(value: Optional[str]) -> Optional[str]:
-            """Replace {ATTR:<name>} placeholders in a string with values from attributes."""
+            """Replace {ATTR:<name>} and {ATTR::<name>} placeholders in a string with values from attributes."""
             if not isinstance(value, str):
                 return value
-            return re.sub(r"\{ATTR:([a-zA-Z_][a-zA-Z0-9_]*)\}", lambda m: attr_dict.get(m.group(1), m.group(0)), value)
+
+            # Patterns for single-colon and double-colon placeholders
+            attr_pattern_single = r"\{ATTR:([a-zA-Z_][a-zA-Z0-9_\-]*)\}"
+            attr_pattern_double = r"\{ATTR::([a-zA-Z_][a-zA-Z0-9_\-]*)\}"
+
+            # Substitute single-colon placeholders
+            resolved_value = re.sub(
+                attr_pattern_single, lambda m: str(attr_dict.get(m.group(1), f"{{ATTR:{m.group(1)}}}")), value
+            )
+
+            # Substitute double-colon placeholders
+            resolved_value = re.sub(
+                attr_pattern_double, lambda m: str(attr_dict.get(m.group(1), f"{{ATTR::{m.group(1)}}}")), resolved_value
+            )
+
+            return resolved_value
 
         def substitute_paths(paths_obj):
             """Substitute placeholders in all fields of a paths object."""
@@ -299,7 +295,7 @@ class Config:
             """
             if isinstance(value, str):
                 # Find all ATTR: and ENV: patterns
-                attr_pattern = r"\{ATTR:([a-zA-Z_][a-zA-Z0-9_]*)\}"
+                attr_pattern = r"\{ATTR:([a-zA-Z_][a-zA-Z0-9_\-]*)\}"
                 env_pattern = r"\{ENV:([a-zA-Z_][a-zA-Z0-9_]*)\}"
 
                 # Check for missing ATTR references
@@ -395,7 +391,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Resolve config from JSON string 
+  # Resolve config from JSON string
   resolve-config '{"name": "test", "type": "sim", "attributes": {...}, ...}'
 
   # Pretty print the resolved JSON
