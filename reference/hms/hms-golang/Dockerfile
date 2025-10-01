@@ -17,20 +17,21 @@ RUN go build -o /hms-runner main.go
 # ---------------------------------------------------------------------
 # 2) RUNTIME STAGE – minimal image with HMS + busybox + wrapper
 # ---------------------------------------------------------------------
-FROM debian:bookworm-slim
+# FROM debian:bookworm-slim
+FROM ffrd_base AS runtime
 
 RUN apt-get update \
     && apt-get install -y \
-       wget unzip libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 \
+       wget unzip libxrender1 libxtst6 libxi6 libfreetype6 libgfortran5 libfontconfig1 procps xvfb python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and extract HEC-HMS
 # TODO: encountering DSS errors when attempting to run v4.13 image
 ARG HMS_VERSION="4.12"
 ARG HMS_HOME="/opt/HEC-HMS-${HMS_VERSION}"
-RUN if [ "$HMS_VERSION" = "4.13" ]; then \
+RUN if [ "$HMS_VERSION" = "4.13-beta.6" ]; then \
         # HEC-HMS 4.13 download URL is slightly different
-        HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HMS_VERSION}-linux64/hec-hms-${HMS_VERSION}-linux64-linux64.tar.gz"; \
+        HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HMS_VERSION}-linux64/hec-hms-${HMS_VERSION}-linux64.tar.gz"; \
     else \
         HMS_DOWNLOAD_URL="https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-hms/${HMS_VERSION}-linux64/hec-hms-${HMS_VERSION}-linux64.tar.gz"; \
     fi \
@@ -48,15 +49,21 @@ RUN if [ "$HMS_VERSION" = "4.13" ]; then \
     && chmod -R 777 ${HMS_HOME}/samples/ \
     && rm -rf /tmp/samples
 
-# Runner binary
+# Copy the runner binary and schemas
 COPY --from=builder /hms-runner /usr/local/bin/hms-runner
+COPY ./schemas/action.hms.run_simulation.json /schemas
 
 # Environment expected by the wrapper / HMS
 ENV HMS_HOME="${HMS_HOME}" \
     PATH=/usr/local/bin:/usr/bin:/bin
 
-# Optional: non-root execution
-USER 1000:1000
-WORKDIR /workspace
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["hms-runner"]
+# # Optional: non-root execution
+# USER 1000:1000
+# WORKDIR /workspace
+
+
+# ENTRYPOINT ["hms-runner"]
+ENTRYPOINT ["./entrypoint.sh"]
