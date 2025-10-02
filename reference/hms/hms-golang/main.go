@@ -58,7 +58,7 @@ type cliCfg struct {
 	logFormat    string
 }
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 // func parseFlags() cliCfg {
 // 	var c cliCfg
 // 	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
@@ -169,19 +169,19 @@ func populateCliCfgFromPayload(payload Payload) cliCfg {
     }
 
     return c
-=======
-func parseFlags() cliCfg {
-	var c cliCfg
-	flag.StringVar(&c.projectFile,  "project-file",  "",     ".hms project file")
-	flag.StringVar(&c.simName,      "sim-name",      "",     "simulation name")
-	flag.StringVar(&c.excessPrecip, "excess-precip", "",     "path to export spatial excess precip as RAS .p##.tmp.hdf file or .dss file")
-	flag.StringVar(&c.jsonFile,     "json-file",     "",     "configure HMS run with a JSON file based on the FFRD HMS schema")
-	flag.BoolVar(&c.example,        "example",       false,  "run built-in example (tenk)")
-	flag.StringVar(&c.logFormat,    "log-format",    "text", "text | json")
-	flag.Parse()
-	return c
->>>>>>> main
 }
+// =======
+// func parseFlags() cliCfg {
+// 	var c cliCfg
+// 	flag.StringVar(&c.projectFile,  "project-file",  "",     ".hms project file")
+// 	flag.StringVar(&c.simName,      "sim-name",      "",     "simulation name")
+// 	flag.StringVar(&c.excessPrecip, "excess-precip", "",     "path to export spatial excess precip as RAS .p##.tmp.hdf file or .dss file")
+// 	flag.StringVar(&c.jsonFile,     "json-file",     "",     "configure HMS run with a JSON file based on the FFRD HMS schema")
+// 	flag.BoolVar(&c.example,        "example",       false,  "run built-in example (tenk)")
+// 	flag.StringVar(&c.logFormat,    "log-format",    "text", "text | json")
+// 	flag.Parse()
+// 	return c
+// >>>>>>> main
 
 /* ---------- helpers ------------------------------------------------------ */
 
@@ -389,9 +389,9 @@ func main() {
 		os.Exit(1)
 	}
 	rasHdfRe := regexp.MustCompile(`.*\.p[0-9][0-9]\.(hdf|tmp\.hdf)$`)
-	if !rasHdfRe.MatchString(excessPrecip) &&
-		!strings.HasSuffix(strings.ToLower(excessPrecip), ".dss") &&
-		excessPrecip != "" {
+	if !rasHdfRe.MatchString(c.excessPrecip) &&
+		!strings.HasSuffix(strings.ToLower(c.excessPrecip), ".dss") &&
+		c.excessPrecip != "" {
 		logError(hmsRunner, "excess_precip must be a .p##.tmp.hdf file or .dss file")
 		os.Exit(1)
 	}
@@ -413,7 +413,7 @@ func main() {
 
 
 	// --- build Jython script ---------------------------------------------
-	scriptPath, e := buildJython(projectName, projectDir, simName, excessPrecip)
+	scriptPath, e := buildJython(projectName, projectDir, c.simName, c.excessPrecip)
 	if e != nil {
 		logError(hmsRunner, "cannot write temp script: "+e.Error())
 		os.Exit(1)
