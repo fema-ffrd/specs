@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dag-example-
+spec:
+  entrypoint: main
+  volumeClaimTemplates: # Create a shared volume for the workflow
+  - metadata:
+      name: workdir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  templates:
+  - name: main
+    dag:
+      tasks:
+      - name: generate-number
+        template: generate-number
+      - name: process-numbers
+        dependencies: [generate-number]
+        template: process-numbers
+      - name: sum-results
+        dependencies: [process-numbers]
+        template: sum-results
+
+  - name: generate-number
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args: ["echo 5 > /work/number.txt"]
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
+
+  - name: process-numbers
+    parallelism: 2 # Run two steps at a time
+    steps:
+    - - name: process-number
+        template: process-number
+        withItems: # Iterate over this list of numbers
+        - 1
+        - 2
+        - 3
+        - 4
+        arguments:
+          parameters:
+          - name: item
+            value: "{{item}}" # Pass the item from the list to the process-number template
+
+  - name: process-number
+    inputs:
+      parameters:
+      - name: item
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args:
+      - |
+        num=$(cat /work/number.txt)
+        result=$((num + {{inputs.parameters.item}}))
+        echo $result > /work/result-{{inputs.parameters.item}}.txt
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
+
+  - name: sum-results
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args:
+      - |
+        sum=0
+        for file in /work/result-*.txt; do
+          sum=$((sum + $(cat $file)))
+        done
+        echo "Total sum: $sum"
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
