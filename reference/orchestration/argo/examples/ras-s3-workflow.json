@@ -1,0 +1,75 @@
+{
+  "workflow_name": "ras-s3-workflow",
+  "entrypoint": "main",
+  "volumes": [
+    {
+      "name": "workdir",
+      "size": "10Gi",
+      "access_mode": "ReadWriteOnce",
+      "mount_path": "/mnt"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "run-ras",
+      "dependencies": [],
+      "image": "ras_v660",
+      "volume_mounts": ["workdir"],
+      "env": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "value": "your-access-key-id"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "value": "your-secret-access-key"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "us-east-1"
+        }
+      ],
+      "config": {
+        "name": "run-unsteady-lavon-plan01",
+        "type": "ras.run_unsteady_simulation",
+        "attributes": {
+          "geom": "01",
+          "plan": "01",
+          "modelPrefix": "lavon",
+          "base-hydraulics-directory": "hydraulics",
+          "outputdir": "outputs"
+        },
+        "inputs": [
+          {
+            "name": "ras_model_files",
+            "paths": {
+              "b_file": "stac/ras/{ATTR::modelPrefix}.b{ATTR::geom}",
+              "o_file": "stac/ras/{ATTR::modelPrefix}.ic.o{ATTR::plan}",
+              "tmp_hdf": "stac/ras/{ATTR::modelPrefix}.p{ATTR::plan}.tmp.hdf",
+              "x_file": "stac/ras/{ATTR::modelPrefix}.x{ATTR::plan}"
+            },
+            "store_name": "stac-demo"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "hdf_output",
+            "paths": {
+              "hdf_output": "stac/ras/{ATTR::modelPrefix}/{ATTR::outputdir}/{ATTR::modelPrefix}.p{ATTR::plan}.hdf"
+            },
+            "store_name": "stac-demo"
+          }
+        ],
+        "stores": [
+          {
+            "name": "stac-demo",
+            "store_type": "S3",
+            "params": {
+              "root": "trinity-pilot"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
