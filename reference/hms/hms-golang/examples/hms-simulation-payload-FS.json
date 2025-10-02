@@ -1,18 +1,18 @@
 {
-  "name": "hms-simulation-payload-FS",
+  "name": "hms-simulation-payload-FS2",
   "type": "action.hms.run_simulation",
   "attributes": {
     "storms_catalog": "/conformance/storm-catalog/storms/",
     "model-name": "trinity",
     "outputdir": "outputs",
     "base-hydrology-directory": "hydrology",
-    "simulation": "SST",
-    "met-name": "SST",
-    "control-name": "SST",
-    "basin-name": "trinity_sst",
+    "simulation": "apr-may-1990",
+    "met-name": "apr_may_1990",
+    "control-name": "apr_may_1990",
+    "basin-name": "trinity_apr_may_1990",
     "exported-precip-name": "exported-precip_trinity.p01.tmp.hdf",
     "storm-name": "test",
-    "scenario": "conformance",
+    "scenario": "calibration",
     "outputroot": "outputs",
     "CC_EVENT_IDENTIFIER": "10",
     "exported-peak-paths": [
@@ -43,43 +43,43 @@
         "terrain-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.terrain",
         "basin-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::basin-name}.basin"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "hms-data",
       "paths": {
-        "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/paired_data.dss",
-        "normalization-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/trinity_72hr_100yr_in.tif"
+        "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/trinity.pdata",
+        "normalization-file": ""
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "storms",
       "paths": {
         "default": "{ATTR::scenario}/{ATTR::outputroot}/storm-catalog/storms.csv"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "storm-catalog",
       "paths": {
         "default": "{ATTR::scenario}/storm-catalog/storms/{ATTR::CC_EVENT_IDENTIFIER}.dss"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "basinfiles",
       "paths": {
         "basin-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "controlfiles",
       "paths": {
         "control-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/controlspecs"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     }
   ],
   "outputs": [
@@ -88,14 +88,14 @@
       "paths": {
         "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::simulation}.dss"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "excess-precip",
       "paths": {
         "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::exported-precip-name}"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "peaks",
@@ -105,7 +105,7 @@
         "48": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/48h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
         "72": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/72h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     },
     {
       "name": "logs",
@@ -113,15 +113,15 @@
         "failed_events": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/failed_events_{ATTR::CC_EVENT_IDENTIFIER}.csv",
         "time_log": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/timings_{ATTR::CC_EVENT_IDENTIFIER}.csv"
       },
-      "store_name": "FFRD"
+      "store_name": "local-mount"
     }
   ],
   "stores": [
     {
-      "name": "FFRD",
-      "store_type": "S3",
+      "name": "local-mount",
+      "store_type": "FS",
       "params": {
-        "root": "model-library/ffrd-trinity"
+        "root": "ffrd-trinity"
       }
     }
   ]

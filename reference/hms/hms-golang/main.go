@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"flag"
+	// "flag"
 	"fmt"
 	"io"
 	"os"
@@ -56,15 +56,107 @@ type cliCfg struct {
 	logFormat   string
 }
 
-func parseFlags() cliCfg {
-	var c cliCfg
-	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
-	flag.StringVar(&c.simName,     "sim-name",     "",     "simulation name")
-	flag.BoolVar(&c.example,       "example",      false,  "built-in example (tenk)")
-	flag.StringVar(&c.jsonFile,    "json-file",    "",     "JSON file with hms_schema")
-	flag.StringVar(&c.logFormat,   "log-format",   "text", "text | json")
-	flag.Parse()
-	return c
+// func parseFlags() cliCfg {
+// 	var c cliCfg
+// 	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
+// 	flag.StringVar(&c.simName,     "sim-name",     "",     "simulation name")
+// 	flag.BoolVar(&c.example,       "example",      false,  "built-in example (tenk)")
+// 	flag.StringVar(&c.jsonFile,    "json-file",    "",     "JSON file with hms_schema")
+// 	flag.StringVar(&c.logFormat,   "log-format",   "text", "text | json")
+// 	flag.Parse()
+// 	return c
+// }
+/* ---------- json args ----------------------------------------------------- */
+// // Struct for CLI and JSON args
+// type cliCfg struct {
+// 	projectFile string
+// 	simName     string
+// 	example     bool
+// 	logFormat   string
+// }
+
+// Define structs to map the JSON fields
+// This will help in mapping all fields from the JSON payload to variables
+type Payload struct {
+	Name       string                 `json:"name"`
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Inputs     []Input                `json:"inputs"`
+	Outputs    []Output               `json:"outputs"`
+	Stores     []Store                `json:"stores"`
+}
+
+type Input struct {
+	Name      string                 `json:"name"`
+	Paths     map[string]interface{} `json:"paths"`
+	StoreName string                 `json:"store_name"`
+	StoreRoot string                 `json:"store_root"`
+	StoreType string                 `json:"store_type"`
+}
+
+type Output struct {
+	Name      string                 `json:"name"`
+	Paths     map[string]interface{} `json:"paths"`
+	StoreName string                 `json:"store_name"`
+	StoreRoot string                 `json:"store_root"`
+	StoreType string                 `json:"store_type"`
+}
+
+type Store struct {
+	Name   string                 `json:"name"`
+	Params map[string]interface{} `json:"params"`
+	Type   string                 `json:"store_type"`
+}
+
+// // Update the extractCliCfgFromPayload function to map all fields
+// func extractPayload(jsonPath string) (Payload, error) {
+// 	var payload Payload
+// 	file, err := os.Open(jsonPath)
+// 	if err != nil {
+// 		return payload, err
+// 	}
+// 	defer file.Close()
+
+// 	if err = json.NewDecoder(file).Decode(&payload); err != nil {
+// 		return payload, err
+// 	}
+// 	return payload, nil
+// }
+
+func populateCliCfgFromPayload(payload Payload) cliCfg {
+    var c cliCfg
+
+    // Assign projectFile from the first input with name "hms" and path "hms-project-file"
+    for _, inp := range payload.Inputs {
+        if inp.Name == "hms" {
+            if pf, ok := inp.Paths["hms-project-file"].(string); ok {
+                c.projectFile = pf
+            }
+            break
+        }
+    }
+
+    // Assign simName from attributes["simulation"]
+    if sim, ok := payload.Attributes["simulation"].(string); ok {
+        c.simName = sim
+    }
+
+    // Assign example from attributes["example"] (bool or string)
+    if ex, ok := payload.Attributes["example"]; ok {
+        switch v := ex.(type) {
+        case bool:
+            c.example = v
+        case string:
+            c.example = (strings.ToLower(v) == "true")
+        }
+    }
+
+    // Assign logFormat from attributes["logformat"] (string)
+    if lf, ok := payload.Attributes["logformat"].(string); ok {
+        c.logFormat = lf
+    }
+
+    return c
 }
 
 /* ---------- helpers ------------------------------------------------------ */
@@ -84,6 +176,8 @@ func buildJython(projectName, projectDir, simName string) (string, error) {
 	if _, err = tmp.WriteString(code); err != nil {
 		return "", err
 	}
+
+	println("Jython script:\n" + code)
 	tmp.Close()
 	return tmp.Name(), nil
 }
@@ -124,72 +218,108 @@ func tailFile(ctx context.Context, path string, wg *sync.WaitGroup) {
 /* ---------- main workflow ------------------------------------------------ */
 
 func main() {
-	cfg := parseFlags()
-	configureLogger(cfg.logFormat)
 
-	// --- input validation -------------------------------------------------
-	gotInput := 0
-	if cfg.example {
-		gotInput++
+	configureLogger("text")
+
+	// // Only use JSON file for configuration
+	// if len(os.Args) < 2 {
+	// 	fmt.Println("Usage: program <config.json>")
+	// 	os.Exit(1)
+	// }
+
+    if len(os.Args) < 2 {
+        fmt.Println("Usage: program <json-string>")
+        os.Exit(1)
+    }
+
+	// jsonPath := os.Args[1]
+
+	// payload, err := extractPayload(jsonPath)
+	// if err != nil {
+	// 	logError(hmsRunner, "cannot read JSON file: "+err.Error())
+	// 	os.Exit(1)
+	// }
+
+	jsonInput := os.Args[1]
+
+    var payload Payload
+    if err := json.Unmarshal([]byte(jsonInput), &payload); err != nil {
+        logError(hmsRunner, "cannot parse JSON string: "+err.Error())
+        os.Exit(1)
+    }
+
+	// Map fields to variables
+	name := payload.Name
+	typeField := payload.Type
+	attributes := payload.Attributes
+	inputs := payload.Inputs
+	outputs := payload.Outputs
+	stores := payload.Stores
+
+	// Log the mapped variables for debugging
+	logInfo(hmsRunner, fmt.Sprintf("Name: %s, Type: %s", name, typeField))
+	logInfo(hmsRunner, fmt.Sprintf("Attributes: %+v", attributes))
+	logInfo(hmsRunner, fmt.Sprintf("Inputs: %+v", inputs))
+	logInfo(hmsRunner, fmt.Sprintf("Outputs: %+v", outputs))
+	logInfo(hmsRunner, fmt.Sprintf("Stores: %+v", stores))
+
+	// print to verify
+	println("Name: " + name)
+	println("Type: " + typeField)
+	println("Attributes: ")
+	for k, v := range attributes {
+		println(fmt.Sprintf("  %s: %v", k, v))
 	}
-	if cfg.jsonFile != "" {
-		gotInput++
+	println("Inputs: ")
+	for k, v := range inputs {
+		println(fmt.Sprintf("  %s: %v", k, v))
 	}
-	if cfg.projectFile != "" || cfg.simName != "" {
-		gotInput++
+	println("Outputs: ")
+	for k, v := range outputs {
+		println(fmt.Sprintf("  %s: %v", k, v))
 	}
-	if gotInput != 1 {
-		logError(hmsRunner, "Specify exactly one of --example, --json-file, or --project-file/--sim-name")
-		os.Exit(1)
-	}
-
-	var (
-		hmsFile string
-		simName string
-	)
-
-	hmsHome := os.Getenv("HMS_HOME")
-	switch {
-	case cfg.example:
-		hmsFile = filepath.Join(hmsHome, "samples", "tenk", "tenk.hms")
-		simName = "Jan 96 storm"
-
-	case cfg.jsonFile != "":
-		f, e := os.Open(cfg.jsonFile)
-		if e != nil {
-			logError(hmsRunner, "cannot read JSON file: "+e.Error())
-			os.Exit(1)
-		}
-		var data struct {
-			Schema struct {
-				ProjectFile string `json:"project_file"`
-				SimName     string `json:"sim_name"`
-			} `json:"hms_schema"`
-		}
-		if e = json.NewDecoder(f).Decode(&data); e != nil {
-			logError(hmsRunner, "invalid JSON: "+e.Error())
-			os.Exit(1)
-		}
-		hmsFile, simName = data.Schema.ProjectFile, data.Schema.SimName
-
-	default:
-		hmsFile, simName = cfg.projectFile, cfg.simName
+	println("Stores: ")
+	for k, v := range stores {
+		println(fmt.Sprintf("  %s: %v", k, v))
 	}
 
-	if hmsFile == "" || !strings.HasSuffix(strings.ToLower(hmsFile), ".hms") {
+	// map payload to a new var c
+	c := populateCliCfgFromPayload(payload)
+
+	// // c, err := extractCliCfgFromPayload(jsonPath)
+	// if err != nil {
+	// 	logError(hmsRunner, "cannot read JSON file: "+err.Error())
+	// 	os.Exit(1)
+	// }
+	// configureLogger(c.logFormat)
+
+	if c.projectFile == "" || !strings.HasSuffix(strings.ToLower(c.projectFile), ".hms") {
 		logError(hmsRunner, "project_file must be a .hms file")
 		os.Exit(1)
 	}
-	if simName == "" {
+	if c.simName == "" {
 		logError(hmsRunner, "sim_name is required")
 		os.Exit(1)
 	}
 
-	projectDir := filepath.Dir(hmsFile)
-	projectName := strings.TrimSuffix(filepath.Base(hmsFile), filepath.Ext(hmsFile))
+	hmsHome := os.Getenv("HMS_HOME")
+
+	// projectDir := filepath.Dir(c.projectFile)
+	// projectName := strings.TrimSuffix(filepath.Base(c.projectFile), filepath.Ext(c.projectFile))
+
+	// // projectDir := filepath.Dir(hmsFile)
+	// projectDir = filepath.Dir(c.projectFile)
+	// projectName = strings.TrimSuffix(filepath.Base(c.projectFile), filepath.Ext(c.projectFile))
+
+	// // TODO: Have to figure out how to resolve local root from many potential Stores in json (hardcoding for testing)
+	// projectDir := filepath.Join(root, c.projectFile)
+	projectDir := filepath.Join("ffrd-trinity", c.projectFile)
+	projectDir = filepath.Dir(projectDir)
+	projectName := payload.Attributes["model-name"].(string)
+
 
 	// --- build Jython script ---------------------------------------------
-	scriptPath, e := buildJython(projectName, projectDir, simName)
+	scriptPath, e := buildJython(projectName, projectDir, c.simName)
 	if e != nil {
 		logError(hmsRunner, "cannot write temp script: "+e.Error())
 		os.Exit(1)
@@ -267,6 +397,6 @@ func main() {
 	cancel() // signal tailers to stop
 	wg.Wait() // wait for tailers to finish
 
-	logInfo(hmsRunner, fmt.Sprintf("Simulation '%s' completed for project '%s'.", simName, projectName))
+	logInfo(hmsRunner, fmt.Sprintf("Simulation '%s' completed for project '%s'.", c.simName, c.projectFile))
 }
 
