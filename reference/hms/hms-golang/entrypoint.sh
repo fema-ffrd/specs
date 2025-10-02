@@ -11,25 +11,17 @@ fi
 
 
 JSON_PAYLOAD="$1"
-# RUN_SCRIPT=./hms_cli.py
 RUN_SCRIPT=/usr/local/bin/hms-runner
 SCHEMA="action.hms.run_simulation.json"
 
-# read json_payload to string
-# JSON_STRING=$(<"$JSON_PAYLOAD")
-
 echo "🔍 Running schema validation..."
 if ! python3 "$VALIDATE" -s "$SCHEMA" -i "$JSON_PAYLOAD"; then
-# if ! python3 "$VALIDATE" -s "$SCHEMA" -i "$JSON_STRING"; then
   echo "❌ Validation failed. Aborting."
   exit 1
 fi
 
 # python3 $RUN_SCRIPT $JSON_PAYLOAD
 RESOLVED_CONFIG=$($RESOLVE --verbose "$JSON_PAYLOAD")
-# RESOLVED_CONFIG=$($RESOLVE --verbose "$JSON_STRING")
 echo "$RESOLVED_CONFIG" | jq
 
-# echo $RESOLVED_CONFIG | python3 $RUN_SCRIPT
-
-# $RUN_SCRIPT "$JSON_PAYLOAD"
+$RUN_SCRIPT "$RESOLVED_CONFIG"

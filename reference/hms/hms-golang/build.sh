@@ -1,5 +1,5 @@
-# validates (using JSON_STRING in entrypoint method), but not yet passing to the go binary to running hms.
-docker run -v ${PWD}:/workspace go-hms-runner:4.13-beta.6 /workspace/examples/hms-simulation-payload-FS.json
+# build the docker image
+docker build -t go-hms-runner:4.13-beta.6 .
 
-# what's expected to work (using JSON_PAYLOAD in entrypoint method), but running into line too long error on Windows. (also not yet tested passing to the go binary to running hms).
-docker run -v ${PWD}:/workspace go-hms-runner:4.13-beta.6 "$(cat /workspace/examples/hms-simulation-payload-FS.json)"
+# passing json template (as string) which will be validate and resolved in entrypoint.sh
+# docker run -v ${PWD}:/workspace go-hms-runner:4.13-beta.6 "$(cat examples/hms-simulation-payload-FS.json)"
