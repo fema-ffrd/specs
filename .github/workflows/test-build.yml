@@ -48,7 +48,7 @@ jobs:
           context: ./reference/base
           file: ./reference/base/Dockerfile
           push: false
-          tags: ${{ env.BASE_IMAGE }}:test
+          tags: ffrd_base:latest
           load: true
 
       - name: Build HMS runner image
