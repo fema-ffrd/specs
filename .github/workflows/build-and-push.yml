@@ -1,0 +1,117 @@
+name: Build and push FFRD images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'reference/base/**'
+      - 'reference/hms/hms-golang/**'
+      - 'reference/ras/v660/**'
+      - '.github/workflows/build-and-push.yml'
+
+env:
+  REGISTRY: ghcr.io
+  BASE_IMAGE: ghcr.io/${{ github.repository_owner }}/ffrd-base
+  HMS_IMAGE: ghcr.io/${{ github.repository_owner }}/hms-runner
+  RAS_IMAGE: ghcr.io/${{ github.repository_owner }}/ras-runner
+  LATEST_HMS_VERSION: "4.13-beta.6"
+
+jobs:
+  build-push-base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push FFRD base image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./reference/base
+          file: ./reference/base/Dockerfile
+          push: true
+          tags: |
+            ${{ env.BASE_IMAGE }}:latest
+            ${{ env.BASE_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.BASE_IMAGE }}:latest
+          cache-to: type=inline
+
+  build-push-hms:
+    needs: build-push-base
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        hms_version: [ "4.10", "4.11", "4.12", "4.13-beta.6" ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push HMS runner image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./reference/hms/hms-golang
+          file: ./reference/hms/hms-golang/Dockerfile
+          push: true
+          tags: ${{ env.HMS_IMAGE }}:${{ matrix.hms_version }}
+          build-args: |
+            HMS_VERSION=${{ matrix.hms_version }}
+          build-contexts: |
+            ffrd_base=docker-image://${{ env.BASE_IMAGE }}:latest
+
+      - name: Tag latest
+        if: ${{ matrix.hms_version == env.LATEST_HMS_VERSION }}
+        run: |
+          docker pull ${{ env.HMS_IMAGE }}:${{ matrix.hms_version }}
+          docker tag ${{ env.HMS_IMAGE }}:${{ matrix.hms_version }} ${{ env.HMS_IMAGE }}:latest
+          docker push ${{ env.HMS_IMAGE }}:latest
+
+  build-push-ras:
+    needs: build-push-base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push RAS v660 image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./reference/ras/v660
+          file: ./reference/ras/v660/Dockerfile
+          push: true
+          tags: |
+            ${{ env.RAS_IMAGE }}:latest
+            ${{ env.RAS_IMAGE }}:${{ github.sha }}
+          build-contexts: |
+            ffrd_base=docker-image://${{ env.BASE_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.RAS_IMAGE }}:latest
+          cache-to: type=inline

@@ -1,0 +1,128 @@
+{
+  "name": "hms-simulation-payload-FS",
+  "type": "action.hms.run_simulation",
+  "attributes": {
+    "storms_catalog": "/conformance/storm-catalog/storms/",
+    "model-name": "trinity",
+    "outputdir": "outputs",
+    "base-hydrology-directory": "hydrology",
+    "simulation": "SST",
+    "met-name": "SST",
+    "control-name": "SST",
+    "basin-name": "trinity_sst",
+    "exported-precip-name": "exported-precip_trinity.p01.tmp.hdf",
+    "storm-name": "test",
+    "scenario": "conformance",
+    "outputroot": "outputs",
+    "CC_EVENT_IDENTIFIER": "10",
+    "exported-peak-paths": [
+      "//amon-g-carter_s030/FLOW//1Hour/RUN:SST/",
+      "//wilson-ck_s010/PRECIP-INC//1Hour/RUN:SST/"
+    ],
+    "exported-peak-durations": [
+      1,
+      24,
+      48,
+      72
+    ],
+    "peak-datasource-name": "peaks",
+    "log-datasource-name": "logs"
+  },
+  "inputs": [
+    {
+      "name": "hms",
+      "paths": {
+        "control-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::control-name}.control",
+        "met-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::met-name}.met",
+        "simulation-dss": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.dss",
+        "grid-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.grid",
+        "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.pdata",
+        "hms-project-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.hms",
+        "run-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.run",
+        "sqlite-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::basin-name}.sqlite",
+        "terrain-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.terrain",
+        "basin-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::basin-name}.basin"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "hms-data",
+      "paths": {
+        "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/paired_data.dss",
+        "normalization-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/trinity_72hr_100yr_in.tif"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "storms",
+      "paths": {
+        "default": "{ATTR::scenario}/{ATTR::outputroot}/storm-catalog/storms.csv"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "storm-catalog",
+      "paths": {
+        "default": "{ATTR::scenario}/storm-catalog/storms/{ATTR::CC_EVENT_IDENTIFIER}.dss"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "basinfiles",
+      "paths": {
+        "basin-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "controlfiles",
+      "paths": {
+        "control-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/controlspecs"
+      },
+      "store_name": "FFRD"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "simulation-dss",
+      "paths": {
+        "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::simulation}.dss"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "excess-precip",
+      "paths": {
+        "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::exported-precip-name}"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "peaks",
+      "paths": {
+        "1": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/1h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+        "24": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/24h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+        "48": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/48h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+        "72": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/72h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv"
+      },
+      "store_name": "FFRD"
+    },
+    {
+      "name": "logs",
+      "paths": {
+        "failed_events": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/failed_events_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+        "time_log": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/timings_{ATTR::CC_EVENT_IDENTIFIER}.csv"
+      },
+      "store_name": "FFRD"
+    }
+  ],
+  "stores": [
+    {
+      "name": "FFRD",
+      "store_type": "S3",
+      "params": {
+        "root": "model-library/ffrd-trinity"
+      }
+    }
+  ]
+}

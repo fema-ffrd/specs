@@ -14,9 +14,9 @@ RUN wget https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/u
 RUN unzip /tmp/HEC-HMS-4.12/samples.zip -d /tmp/HEC-HMS-4.12/
 
 # --- Stage 2: Minimal runtime image ---
-FROM debian:bullseye-slim AS runtime
+FROM ffrd_base AS runtime
 
-LABEL base_image="debian:bullseye-slim" \
+LABEL base_image="ffrd_base:latest" \
       version="0.1.0"   \
       software="hec hms runner" \
       software.version="4.12" \
@@ -38,5 +38,10 @@ COPY --from=builder /tmp/HEC-HMS-4.12/samples ./HEC-HMS-4.12/samples
 
 # Copy the cli tool and set as entrypoint
 COPY hms_cli.py ./hms_cli.py
+COPY ./schemas/action.hms.run_simulation.json /schemas
 
-ENTRYPOINT ["python3", "./hms_cli.py"]
+
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
