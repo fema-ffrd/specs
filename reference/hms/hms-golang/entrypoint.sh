@@ -24,4 +24,10 @@ fi
 RESOLVED_CONFIG=$($RESOLVE --verbose "$JSON_PAYLOAD")
 echo "$RESOLVED_CONFIG" | jq
 
+# download any needed files from S3 based on the resolved config
+python3 /usr/local/bin/download_simulation_files.py "$RESOLVED_CONFIG"
+
 $RUN_SCRIPT "$RESOLVED_CONFIG"
+
+# upload any output files to S3 based on the resolved config
+python3 /usr/local/bin/upload_simulation_files.py "$RESOLVED_CONFIG"

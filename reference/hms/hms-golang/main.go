@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	// "flag"
 	"fmt"
 	"io"
 	"os"
@@ -58,25 +57,6 @@ type cliCfg struct {
 	logFormat    string
 }
 
-// <<<<<<< HEAD
-// func parseFlags() cliCfg {
-// 	var c cliCfg
-// 	flag.StringVar(&c.projectFile, "project-file", "",     ".hms project file")
-// 	flag.StringVar(&c.simName,     "sim-name",     "",     "simulation name")
-// 	flag.BoolVar(&c.example,       "example",      false,  "built-in example (tenk)")
-// 	flag.StringVar(&c.jsonFile,    "json-file",    "",     "JSON file with hms_schema")
-// 	flag.StringVar(&c.logFormat,   "log-format",   "text", "text | json")
-// 	flag.Parse()
-// 	return c
-// }
-/* ---------- json args ----------------------------------------------------- */
-// // Struct for CLI and JSON args
-// type cliCfg struct {
-// 	projectFile string
-// 	simName     string
-// 	example     bool
-// 	logFormat   string
-// }
 
 // Define structs to map the JSON fields
 // This will help in mapping all fields from the JSON payload to variables
@@ -111,21 +91,6 @@ type Store struct {
 	Type   string                 `json:"store_type"`
 }
 
-// // Update the extractCliCfgFromPayload function to map all fields
-// func extractPayload(jsonPath string) (Payload, error) {
-// 	var payload Payload
-// 	file, err := os.Open(jsonPath)
-// 	if err != nil {
-// 		return payload, err
-// 	}
-// 	defer file.Close()
-
-// 	if err = json.NewDecoder(file).Decode(&payload); err != nil {
-// 		return payload, err
-// 	}
-// 	return payload, nil
-// }
-
 func populateCliCfgFromPayload(payload Payload) cliCfg {
     var c cliCfg
 
@@ -141,7 +106,7 @@ func populateCliCfgFromPayload(payload Payload) cliCfg {
 
 	for _, out := range payload.Outputs {
 		if out.Name == "excess-precip" {
-			if ep, ok := out.Paths["excess-precip"].(string); ok {
+			if ep, ok := out.Paths["default"].(string); ok {
 				c.excessPrecip = ep
 			}
 			break
@@ -168,20 +133,10 @@ func populateCliCfgFromPayload(payload Payload) cliCfg {
         c.logFormat = lf
     }
 
+	logInfo(c.excessPrecip, fmt.Sprintf("excessPrecip: %+v", c.excessPrecip))
+
     return c
 }
-// =======
-// func parseFlags() cliCfg {
-// 	var c cliCfg
-// 	flag.StringVar(&c.projectFile,  "project-file",  "",     ".hms project file")
-// 	flag.StringVar(&c.simName,      "sim-name",      "",     "simulation name")
-// 	flag.StringVar(&c.excessPrecip, "excess-precip", "",     "path to export spatial excess precip as RAS .p##.tmp.hdf file or .dss file")
-// 	flag.StringVar(&c.jsonFile,     "json-file",     "",     "configure HMS run with a JSON file based on the FFRD HMS schema")
-// 	flag.BoolVar(&c.example,        "example",       false,  "run built-in example (tenk)")
-// 	flag.StringVar(&c.logFormat,    "log-format",    "text", "text | json")
-// 	flag.Parse()
-// 	return c
-// >>>>>>> main
 
 /* ---------- helpers ------------------------------------------------------ */
 
@@ -274,24 +229,10 @@ func main() {
 
 	configureLogger("text")
 
-	// // Only use JSON file for configuration
-	// if len(os.Args) < 2 {
-	// 	fmt.Println("Usage: program <config.json>")
-	// 	os.Exit(1)
-	// }
-
     if len(os.Args) < 2 {
         fmt.Println("Usage: program <json-string>")
         os.Exit(1)
     }
-
-	// jsonPath := os.Args[1]
-
-	// payload, err := extractPayload(jsonPath)
-	// if err != nil {
-	// 	logError(hmsRunner, "cannot read JSON file: "+err.Error())
-	// 	os.Exit(1)
-	// }
 
 	jsonInput := os.Args[1]
 
@@ -336,51 +277,10 @@ func main() {
 		println(fmt.Sprintf("  %s: %v", k, v))
 	}
 
-// <<<<<<< HEAD
 	// map payload to a new var c
 	c := populateCliCfgFromPayload(payload)
-// =======
-// 	var (
-// 		hmsFile      string
-// 		simName      string
-// 		excessPrecip string
-// 	)
-// >>>>>>> main
 
-	// // c, err := extractCliCfgFromPayload(jsonPath)
-	// if err != nil {
-	// 	logError(hmsRunner, "cannot read JSON file: "+err.Error())
-	// 	os.Exit(1)
-	// }
-	// configureLogger(c.logFormat)
-
-// <<<<<<< HEAD
 	if c.projectFile == "" || !strings.HasSuffix(strings.ToLower(c.projectFile), ".hms") {
-// =======
-// 	case cfg.jsonFile != "":
-// 		f, e := os.Open(cfg.jsonFile)
-// 		if e != nil {
-// 			logError(hmsRunner, "cannot read JSON file: "+e.Error())
-// 			os.Exit(1)
-// 		}
-// 		type Schema struct {
-// 			ProjectFile  string `json:"project_file"`
-// 			SimName      string `json:"sim_name"`
-// 			ExcessPrecip string `json:"excess_precip,omitempty"`
-// 		}
-// 		var s Schema
-// 		if e = json.NewDecoder(f).Decode(&s); e != nil {
-// 			logError(hmsRunner, "invalid JSON: "+e.Error())
-// 			os.Exit(1)
-// 		}
-// 		hmsFile, simName, excessPrecip = s.ProjectFile, s.SimName, s.ExcessPrecip
-
-// 	default:
-// 		hmsFile, simName, excessPrecip = cfg.projectFile, cfg.simName, cfg.excessPrecip
-// 	}
-
-// 	if hmsFile == "" || !strings.HasSuffix(strings.ToLower(hmsFile), ".hms") {
-// >>>>>>> main
 		logError(hmsRunner, "project_file must be a .hms file")
 		os.Exit(1)
 	}
@@ -398,19 +298,13 @@ func main() {
 
 	hmsHome := os.Getenv("HMS_HOME")
 
-	// projectDir := filepath.Dir(c.projectFile)
-	// projectName := strings.TrimSuffix(filepath.Base(c.projectFile), filepath.Ext(c.projectFile))
-
-	// // projectDir := filepath.Dir(hmsFile)
-	// projectDir = filepath.Dir(c.projectFile)
-	// projectName = strings.TrimSuffix(filepath.Base(c.projectFile), filepath.Ext(c.projectFile))
-
-	// // TODO: Have to figure out how to resolve local root from many potential Stores in json (hardcoding for testing)
-	// projectDir := filepath.Join(root, c.projectFile)
-	projectDir := filepath.Join("ffrd-trinity", c.projectFile)
+	const LOCAL_DIR = "/mnt"
+	projectDir := filepath.Join(LOCAL_DIR, c.projectFile)
 	projectDir = filepath.Dir(projectDir)
 	projectName := payload.Attributes["model-name"].(string)
 
+	logInfo(projectDir, fmt.Sprintf("projectDir: %+v", projectDir))
+	
 
 	// --- build Jython script ---------------------------------------------
 	scriptPath, e := buildJython(projectName, projectDir, c.simName, c.excessPrecip)

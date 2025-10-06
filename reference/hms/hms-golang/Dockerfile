@@ -60,10 +60,12 @@ ENV HMS_HOME="${HMS_HOME}" \
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+# match base image location for download/upload utilities
+COPY download_simulation_files.py /usr/local/bin/download_simulation_files.py
+COPY upload_simulation_files.py /usr/local/bin/upload_simulation_files.py
+
 # # Optional: non-root execution
 # USER 1000:1000
 # WORKDIR /workspace
 
-
-# ENTRYPOINT ["hms-runner"]
 ENTRYPOINT ["./entrypoint.sh"]
