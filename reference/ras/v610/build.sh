@@ -1,7 +1,7 @@
 IMAGE=ffrd_child
-docker build -t $IMAGE .
+#docker build --platform linux/amd64 -t $IMAGE .
 
 # docker run --rm $IMAGE
 
-docker run --rm -v ./data:/data $IMAGE "$(cat example-ras-config.json)"
-# docker run --rm -v ./data:/data --entrypoint /bin/bash $IMAGE -c "ls -l /data"
+ docker run --platform linux/amd64  --rm -v ./data:/data $IMAGE "$(cat example-ras-config.json)"
+ #docker run --platform linux/amd64 --rm -v ./data:/data --entrypoint /bin/bash $IMAGE -c "ls -l /data"

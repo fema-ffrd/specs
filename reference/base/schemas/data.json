@@ -1,0 +1,93 @@
+{
+  "$id": "./data.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Data Schemas",
+  "description": "Shared schema definitions for Paths, DataPaths, and DataSource (Inputs / Outputs) by action schemas.",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "Paths": {
+      "type": "object",
+      "title": "Path Map",
+      "description": "Named path templates used by inputs/outputs. May include a 'default' path. Placeholders like {ATTR::model-name} are resolved from the action's attributes.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Path template string."
+      },
+      "properties": {
+        "default": {
+          "type": "string",
+          "description": "Default/fallback path template.",
+          "examples": [
+            "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::control-name}.control",
+            "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.dss"
+          ]
+        }
+      }
+    },
+    "DataPaths": {
+      "type": "object",
+      "title": "DataPaths",
+      "description": "Mapping of domain keys to selectors/locations inside files (e.g., DSS pathname or HDF internal path).",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "array"
+        ]
+      },
+      "examples": [
+        {
+          "DSS": "//BASIN/LOCATION/VAR/1DAY/OBS",
+          "HDF": "/Results/subgroup/dataset"
+        }
+      ]
+    },
+    "DataSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "paths"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Logical input name.",
+          "examples": [
+            "source"
+          ]
+        },
+        "paths": {
+          "$ref": "#/$defs/Paths",
+          "description": "Named path templates for locating input files/objects."
+        },
+        "data_paths": {
+          "$ref": "#/$defs/DataPaths",
+          "description": "Map of domain keys to in-file selectors (optional unless required by the specific action)."
+        },
+        "store": {
+          "$ref": "file:///app/schemas/store.json",
+          "description": "Inline store config for this data source."
+        },
+        "store_name": {
+          "type": "string",
+          "description": "Reference to a named top-level store in the action."
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "store"
+          ]
+        },
+        {
+          "required": [
+            "store_name"
+          ]
+        }
+      ]
+    }
+  }
+}
