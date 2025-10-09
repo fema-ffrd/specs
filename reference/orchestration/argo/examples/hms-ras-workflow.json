@@ -1,0 +1,277 @@
+{
+  "workflow_name": "hms-ras-workflow",
+  "entrypoint": "main",
+  "volumes": [
+    {
+      "name": "workdir",
+      "size": "10Gi",
+      "access_mode": "ReadWriteOnce",
+      "mount_path": "/mnt"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "run-hms",
+      "dependencies": [],
+      "image": "hms-golang",
+      "volume_mounts": ["workdir"],
+      "env": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "value": "your-access-key-id"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "value": "your-secret-access-key"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "us-east-1"
+        }
+      ],
+      "config": {
+        "name": "hms-simulation-s3-to-fs",
+        "type": "action.hms.run_simulation",
+        "attributes": {
+          "storms_catalog": "/conformance/storm-catalog/storms/",
+          "model-name": "trinity",
+          "outputdir": "outputs",
+          "base-hydrology-directory": "hydrology",
+          "simulation": "apr-may-1990",
+          "met-name": "apr_may_1990",
+          "control-name": "apr_may_1990",
+          "basin-name": "trinity_apr_may_1990",
+          "exported-precip-name": "exported-precip_trinity.p01.tmp.hdf",
+          "storm-name": "test",
+          "scenario": "calibration",
+          "outputroot": "outputs",
+          "CC_EVENT_IDENTIFIER": "10",
+          "exported-peak-paths": [
+            "//amon-g-carter_s030/FLOW//1Hour/RUN:SST/",
+            "//wilson-ck_s010/PRECIP-INC//1Hour/RUN:SST/"
+          ],
+          "exported-peak-durations": [1, 24, 48, 72],
+          "peak-datasource-name": "peaks",
+          "log-datasource-name": "logs"
+        },
+        "inputs": [
+          {
+            "name": "hms",
+            "paths": {
+              "control-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::control-name}.control",
+              "met-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::met-name}.met",
+              "simulation-dss": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.dss",
+              "grid-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.grid",
+              "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.pdata",
+              "hms-project-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.hms",
+              "run-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.run",
+              "sqlite-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::basin-name}.sqlite",
+              "terrain-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::model-name}.terrain",
+              "basin-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/{ATTR::basin-name}.basin"
+            },
+            "store_name": "s3-input"
+          },
+          {
+            "name": "hms-data",
+            "paths": {
+              "paired-data-file": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/trinity.pdata",
+              "normalization-file": ""
+            },
+            "store_name": "s3-input"
+          },
+          {
+            "name": "storms",
+            "paths": {
+              "default": "{ATTR::scenario}/{ATTR::outputroot}/storm-catalog/storms.csv"
+            },
+            "store_name": "s3-input"
+          },
+          {
+            "name": "storm-catalog",
+            "paths": {
+              "default": "{ATTR::scenario}/storm-catalog/storms/{ATTR::CC_EVENT_IDENTIFIER}.dss"
+            },
+            "store_name": "s3-input"
+          },
+          {
+            "name": "basinfiles",
+            "paths": {
+              "basin-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}"
+            },
+            "store_name": "s3-input"
+          },
+          {
+            "name": "controlfiles",
+            "paths": {
+              "control-prefix": "{ATTR::scenario}/{ATTR::base-hydrology-directory}/{ATTR::model-name}/data/controlspecs"
+            },
+            "store_name": "s3-input"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "simulation-dss",
+            "paths": {
+              "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::simulation}.dss"
+            },
+            "store_name": "shared-volume"
+          },
+          {
+            "name": "excess-precip",
+            "paths": {
+              "default": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::exported-precip-name}"
+            },
+            "store_name": "shared-volume"
+          },
+          {
+            "name": "peaks",
+            "paths": {
+              "1": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/1h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+              "24": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/24h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+              "48": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/48h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+              "72": "{ATTR::scenario}/{ATTR::outputroot}/summary-data/{ATTR::base-hydrology-directory}/72h_peaks_{ATTR::CC_EVENT_IDENTIFIER}.csv"
+            },
+            "store_name": "shared-volume"
+          },
+          {
+            "name": "logs",
+            "paths": {
+              "failed_events": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/failed_events_{ATTR::CC_EVENT_IDENTIFIER}.csv",
+              "time_log": "{ATTR::scenario}/{ATTR::outputroot}/logs/{ATTR::base-hydrology-directory}/timings_{ATTR::CC_EVENT_IDENTIFIER}.csv"
+            },
+            "store_name": "shared-volume"
+          }
+        ],
+        "stores": [
+          {
+            "name": "s3-input",
+            "store_type": "S3",
+            "params": {
+              "root": "trinity-models"
+            }
+          },
+          {
+            "name": "shared-volume",
+            "store_type": "FS",
+            "params": {
+              "root": "/mnt"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "download-ras-inputs",
+      "dependencies": ["run-hms"],
+      "image": "ffrd_base",
+      "volume_mounts": ["workdir"],
+      "env": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "value": "your-access-key-id"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "value": "your-secret-access-key"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "us-east-1"
+        }
+      ],
+      "config": {
+        "base_schema": {
+          "s3Downloads": [
+            {
+              "name": "b_file",
+              "s3Uri": "s3://trinity-pilot/stac/ras/lavon.b01",
+              "destinationPath": "/mnt/stac/ras/lavon.b01"
+            },
+            {
+              "name": "o_file",
+              "s3Uri": "s3://trinity-pilot/stac/ras/lavon.ic.o01",
+              "destinationPath": "/mnt/stac/ras/lavon.ic.o01"
+            },
+            {
+              "name": "x_file",
+              "s3Uri": "s3://trinity-pilot/stac/ras/lavon.x01",
+              "destinationPath": "/mnt/stac/ras/lavon.x01"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "run-ras",
+      "dependencies": ["download-ras-inputs"],
+      "image": "ras_v660",
+      "volume_mounts": ["workdir"],
+      "env": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "value": "your-access-key-id"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "value": "your-secret-access-key"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "us-east-1"
+        }
+      ],
+      "config": {
+        "name": "run-unsteady-fs-to-s3",
+        "type": "ras.run_unsteady_simulation",
+        "attributes": {
+          "geom": "01",
+          "plan": "01",
+          "modelPrefix": "lavon",
+          "base-hydraulics-directory": "hydraulics",
+          "outputdir": "outputs",
+          "scenario": "calibration",
+          "outputroot": "outputs",
+          "CC_EVENT_IDENTIFIER": "10",
+          "exported-precip-name": "exported-precip_trinity.p01.tmp.hdf"
+        },
+        "inputs": [
+          {
+            "name": "ras_model_files",
+            "paths": {
+              "b_file": "stac/ras/lavon.b{ATTR::geom}",
+              "o_file": "stac/ras/lavon.ic.o{ATTR::plan}",
+              "tmp_hdf": "{ATTR::scenario}/{ATTR::outputroot}/event-data/{ATTR::CC_EVENT_IDENTIFIER}/{ATTR::base-hydrology-directory}/{ATTR::exported-precip-name}",
+              "x_file": "stac/ras/lavon.x{ATTR::plan}"
+            },
+            "store_name": "shared-volume"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "hdf_output",
+            "paths": {
+              "hdf_output": "stac/ras/{ATTR::modelPrefix}/{ATTR::outputdir}/{ATTR::modelPrefix}.p{ATTR::plan}.hdf"
+            },
+            "store_name": "s3-output"
+          }
+        ],
+        "stores": [
+          {
+            "name": "shared-volume",
+            "store_type": "FS",
+            "params": {
+              "root": "/mnt"
+            }
+          },
+          {
+            "name": "s3-output",
+            "store_type": "S3",
+            "params": {
+              "root": "trinity-pilot"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
