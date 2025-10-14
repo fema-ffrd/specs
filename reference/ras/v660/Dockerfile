@@ -12,11 +12,17 @@ FROM ffrd_base AS ffrd_base
 COPY --from=build /Linux_RAS_v66/ /ras
 RUN chmod +x -R /ras/*
 
+RUN pip install structlog
+RUN pip install h5py
+
 RUN mkdir /sim
 WORKDIR /sim
 
 COPY ./schemas/action.ras.run_unsteady_simulation.json /schemas
 COPY ./run_unsteady.py .
+COPY ./delete_hdf5_group.py .
+
+
 
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
