@@ -1,0 +1,248 @@
+## 📚 Reference
+
+### Argo Workflows Implementation
+
+This reference implementation demonstrates how Argo Workflows could support FFRD orchestration needs. Argo Workflows is presented as one example of an orchestration system that offers relevant capabilities, alongside other potential solutions that could meet similar workflow requirements.
+
+#### Implementation Overview
+
+The reference implementation uses Argo Workflows running on Kubernetes to illustrate:
+
+- DAG-based workflow execution patterns with explicit task dependencies
+- Container execution approaches with shared volume access
+- Parallel task execution techniques with parameterization
+- Shared volume management strategies for data exchange between tasks
+- Logging and monitoring capabilities for workflow observability
+
+#### Example Workflow Structure
+
+The following example demonstrates a basic FFRD workflow pattern with parallel processing and data collection:
+
+```yaml
+# This is a simplified example showing the orchestration pattern
+# Full FFRD workflows would use FFRD-compliant containers and configurations
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dag-example-
+spec:
+  entrypoint: main
+  volumeClaimTemplates: # Create a shared volume for the workflow
+  - metadata:
+      name: workdir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  templates:
+  - name: main
+    dag:
+      tasks:
+      - name: generate-number
+        template: generate-number
+      - name: process-numbers
+        dependencies: [generate-number]
+        template: process-numbers
+      - name: sum-results
+        dependencies: [process-numbers]
+        template: sum-results
+
+  - name: generate-number
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args: ["echo 5 > /work/number.txt"]
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
+
+  - name: process-numbers
+    parallelism: 2 # Run two steps at a time
+    steps:
+    - - name: process-number
+        template: process-number
+        withItems: # Iterate over this list of numbers
+        - 1
+        - 2
+        - 3
+        - 4
+        arguments:
+          parameters:
+          - name: item
+            value: "{{ '{{item}}' }}" # Pass the item from the list to the process-number template
+
+  - name: process-number
+    inputs:
+      parameters:
+      - name: item
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args:
+      - |
+        num=$(cat /work/number.txt)
+        result=$((num + {{ '{{inputs.parameters.item}}' }}))
+        echo $result > /work/result-{{ '{{inputs.parameters.item}}' }}.txt
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
+
+  - name: sum-results
+    container:
+      image: alpine:3.18
+      command: [sh, -c]
+      args:
+      - |
+        sum=0
+        for file in /work/result-*.txt; do
+          sum=$((sum + $(cat $file)))
+        done
+        echo "Total sum: $sum"
+      volumeMounts:
+      - name: workdir
+        mountPath: /work
+```
+
+#### Key Implementation Features
+
+##### DAG Structure
+
+- Uses Argo's DAG template to define explicit task dependencies (`dependencies: [generate-number]`)
+- Demonstrates parallel execution through steps with `withItems` parameterization
+- Shows sequential workflow phases (generate → process → collect)
+
+##### Container Execution
+
+- Executes standard containers (Alpine Linux) as a pattern for FFRD containers
+- Demonstrates passing command line arguments to containers
+- Shows volume mounting for data access across all tasks
+
+##### Data Sharing
+
+- Uses persistent volume claims (`volumeClaimTemplates`) for shared storage
+- Consistent volume mounting (`/work`) across all workflow tasks
+- Demonstrates file-based data exchange between workflow steps
+
+##### Parameterization
+
+- Shows parameter passing with `withItems` for parallel task execution
+- Demonstrates template parameter usage with `inputs.parameters.item`
+- Illustrates how to iterate over lists to create multiple parallel tasks
+
+#### Deployment Requirements
+
+##### Infrastructure
+
+- Kubernetes cluster
+- Argo Workflows
+- Container runtime (Docker, containerd, or CRI-O)
+- Persistent storage provisioner
+
+##### Configuration
+
+- Argo Workflows controller installation
+- RBAC configuration for workflow execution
+- Storage class configuration for volume provisioning
+- Container registry access credentials
+
+#### Usage Examples
+
+##### Validate Workflow
+
+```bash
+# Validate the workflow definition
+argo lint reference.yaml
+```
+
+##### Submit Workflow
+
+```bash
+# Submit the workflow to Argo
+argo submit reference.yaml
+```
+
+##### Monitor Execution
+
+```bash
+# List all workflows
+argo list
+
+# Watch workflow execution (use actual workflow name from list)
+argo get dag-example-abc123
+
+# View workflow logs
+argo logs dag-example-abc123
+```
+
+##### Access Results
+
+```bash
+# View workflow status and results
+argo get dag-example-abc123
+```
+
+### Dev Container Setup (Optional)
+
+This section describes how to set up a development environment for running argo workflows locally using Visual Studio Code Dev Containers. This setup includes a lightweight Kubernetes cluster (k3s) with Argo Workflows installed, allowing you to run and test the reference implementation locally.
+
+1. Open [this](https://github.com/fema-ffrd/specs) repository in VS Code
+1. When prompted, click "Reopen in Container" or use the Command Palette (Ctrl+Shift+P) and select "Dev Containers: Reopen in Container"
+1. The container will automatically set up the environment and install dependencies
+
+#### What Gets Installed
+
+The setup includes:
+
+- **Base**: Debian 12 (bookworm) container
+- **Docker**: Docker-outside-of-Docker for running k3s
+- **kubectl**: Kubernetes CLI
+- **argo**: Argo Workflows CLI v3.7.0
+- **k3s**: Lightweight Kubernetes cluster
+- **Argo Workflows**: v3.7.0 installed in the cluster
+
+```
+┌─────────────────────────────────────-┐
+│             DevContainer             │
+│  ┌─────────────┐  ┌───────────────┐  │
+│  │    argo     │  │    kubectl    │  │
+│  │     CLI     │  │      CLI      │  │
+│  └─────────────┘  └───────────────┘  │
+│                                      │
+│  ┌─────────────────────────────────┐ │
+│  │          Docker Host            │ │
+│  │  ┌─────────────────────────────┐│ │
+│  │  │      k3s Container          ││ │
+│  │  │  ┌─────────────────────────┐││ │
+│  │  │  │   Argo Workflows        │││ │
+│  │  │  └─────────────────────────┘││ │
+│  │  └─────────────────────────────┘│ │
+│  └─────────────────────────────────┘ │
+└─────────────────────────────────────-┘
+```
+
+#### Useful Commands
+
+Once setup is complete, you can use these commands:
+
+```bash
+# Validate workflow files
+argo lint reference/orchestration/argo/reference.yaml
+
+# Submit workflow files
+argo submit reference/orchestration/argo/reference.yaml
+
+# Watch the workflow execution
+argo submit --watch reference/orchestration/argo/reference.yaml
+
+# List all workflows
+argo list
+
+# View logs for a specific workflow
+argo logs <workflow-name>
+```
+
+#### Useful Links
+
+- Read the [Argo Workflows documentation](https://argo-workflows.readthedocs.io/)
